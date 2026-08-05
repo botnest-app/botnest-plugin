@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import sys
 import urllib.error
 import urllib.request
 
@@ -12,16 +13,22 @@ BASE = "https://botnest.app"
 
 
 def get_json(path: str) -> dict:
-    with urllib.request.urlopen(f"{BASE}{path}", timeout=15) as response:
-        if response.status != 200:
-            raise RuntimeError(f"GET {path} returned {response.status}")
-        return json.load(response)
+    try:
+        with urllib.request.urlopen(f"{BASE}{path}", timeout=15) as response:
+            if response.status != 200:
+                raise RuntimeError(f"GET {path} returned {response.status}")
+            return json.load(response)
+    except urllib.error.HTTPError as error:
+        raise RuntimeError(f"GET {path} returned {error.code}") from error
 
 
 def expect_page(path: str) -> None:
-    with urllib.request.urlopen(f"{BASE}{path}", timeout=15) as response:
-        if response.status != 200:
-            raise RuntimeError(f"GET {path} returned {response.status}")
+    try:
+        with urllib.request.urlopen(f"{BASE}{path}", timeout=15) as response:
+            if response.status != 200:
+                raise RuntimeError(f"GET {path} returned {response.status}")
+    except urllib.error.HTTPError as error:
+        raise RuntimeError(f"GET {path} returned {error.code}") from error
 
 
 def expect_mcp_auth_challenge() -> None:
@@ -71,4 +78,8 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except (RuntimeError, urllib.error.URLError, json.JSONDecodeError) as error:
+        print(f"Production review preflight failed: {error}", file=sys.stderr)
+        raise SystemExit(1) from None
