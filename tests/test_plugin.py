@@ -127,13 +127,33 @@ class McpBridgeTests(unittest.TestCase):
             {"jsonrpc": "2.0", "id": 1, "method": "tools/list", "params": {}}
         )
         tools = response["result"]["tools"]
-        self.assertGreaterEqual(len(tools), 10)
+        expected_annotations = {
+            "connect_botnest": (False, False, True),
+            "get_flow_builder_context": (True, False, False),
+            "prepare_telegram_bot": (False, False, False),
+            "get_bot_creation_status": (True, False, False),
+            "list_bots": (True, False, False),
+            "get_telegram_bot_diagnostics": (True, False, False),
+            "publish_telegram_bot": (False, False, True),
+            "update_telegram_bot": (False, True, True),
+            "get_telegram_bot_profile": (False, False, False),
+            "update_telegram_bot_profile": (False, True, True),
+        }
+        self.assertEqual({tool["name"] for tool in tools}, set(expected_annotations))
         for tool in tools:
             self.assertEqual(tool["inputSchema"]["type"], "object")
             self.assertEqual(tool["outputSchema"]["type"], "object")
             annotations = tool["annotations"]
             for name in ("readOnlyHint", "destructiveHint", "openWorldHint"):
                 self.assertIs(type(annotations[name]), bool, f"{tool['name']}.{name}")
+            self.assertEqual(
+                (
+                    annotations["readOnlyHint"],
+                    annotations["destructiveHint"],
+                    annotations["openWorldHint"],
+                ),
+                expected_annotations[tool["name"]],
+            )
 
     def test_manifest_and_skill_paths_exist(self):
         manifest = load_json(PLUGIN / ".codex-plugin" / "plugin.json")
