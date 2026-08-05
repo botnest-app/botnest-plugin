@@ -1,0 +1,43 @@
+{
+  "name": "botnest",
+  "version": "1.0.0",
+  "description": "Create, improve, diagnose, brand, and publish production-ready Telegram bots with botnest.",
+  "author": {
+    "name": "botnest",
+    "email": "support@botnest.app",
+    "url": "https://botnest.app/"
+  },
+  "homepage": "https://botnest.app/",
+  "repository": "https://github.com/botnest-app/botnest-plugin",
+  "keywords": [
+    "telegram",
+    "bots",
+    "automation",
+    "no-code",
+    "botnest"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "botnest",
+    "shortDescription": "Создавайте, настраивайте и оформляйте Telegram-ботов",
+    "longDescription": "Создавайте, изменяйте и публикуйте Telegram-ботов обычными словами. botnest проектирует и проверяет сценарии, подключает LLM-провайдера, помогает диагностировать ошибки и настраивает имя, описание, команды и аватар.",
+    "developerName": "botnest",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://botnest.app/",
+    "privacyPolicyURL": "https://botnest.app/legal/privacy/",
+    "termsOfServiceURL": "https://botnest.app/legal/offer/",
+    "defaultPrompt": [
+      "Создай Telegram-бота для записи клиентов",
+      "Сделай бота поддержки по моему описанию",
+      "Измени поведение и оформление моего последнего бота"
+    ],
+    "brandColor": "#6557E8",
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/logo.png"
+  }
+}
