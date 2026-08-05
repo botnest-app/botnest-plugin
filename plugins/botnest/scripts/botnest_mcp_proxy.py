@@ -82,10 +82,10 @@ REMOTE_TOOLS = [
         "name": "prepare_telegram_bot",
         "title": "Prepare a Telegram bot",
         "description": (
-            "Prepare a BotNest Telegram bot from the user's goal and return the "
-            "official Telegram creation link. Authorization is completed "
-            "automatically after Telegram confirmation. Accepts an optional "
-            "neutral purpose-based display name."
+            "Create a private BotNest setup from the user's goal and return the "
+            "official Telegram creation link. This does not create or publish a "
+            "Telegram bot until the user confirms in Telegram. Authorization is "
+            "completed automatically after that confirmation."
         ),
         "inputSchema": {
             "type": "object",
@@ -125,7 +125,7 @@ REMOTE_TOOLS = [
             "readOnlyHint": False,
             "destructiveHint": False,
             "idempotentHint": True,
-            "openWorldHint": True,
+            "openWorldHint": False,
         },
     },
     {
@@ -168,7 +168,9 @@ REMOTE_TOOLS = [
         "title": "Get Telegram bot diagnostics",
         "description": (
             "Read recent flow and block execution results for an owned bot. "
-            "Use this before diagnosing behavior that did not work as expected."
+            "Short per-block details may include message or model-output previews "
+            "from the user's own recent runs. Use this only when diagnosing bot "
+            "behavior that did not work as expected."
         ),
         "inputSchema": {
             "type": "object",
@@ -214,8 +216,10 @@ REMOTE_TOOLS = [
         "name": "update_telegram_bot",
         "title": "Update a Telegram bot",
         "description": (
-            "Update an existing BotNest Telegram bot from a plain-language "
-            "description while keeping the same Telegram bot."
+            "Replace an existing BotNest Telegram bot's behavior from a "
+            "plain-language description while keeping the same Telegram bot. "
+            "The current flow is snapshotted before the replacement is applied; "
+            "the change affects how the bot responds to Telegram users."
         ),
         "inputSchema": {
             "type": "object",
@@ -243,7 +247,7 @@ REMOTE_TOOLS = [
             "readOnlyHint": False,
             "destructiveHint": True,
             "idempotentHint": True,
-            "openWorldHint": False,
+            "openWorldHint": True,
         },
     },
     {
@@ -251,7 +255,9 @@ REMOTE_TOOLS = [
         "title": "Get a Telegram bot profile",
         "description": (
             "Read the Telegram-facing name, descriptions, commands, menu "
-            "button, avatar state, languages, and suggested admin rights."
+            "button, avatar state, languages, and suggested admin rights. With "
+            "refresh enabled, fetch the profile from Telegram and cache the "
+            "refreshed snapshot in BotNest."
         ),
         "inputSchema": {
             "type": "object",
@@ -264,19 +270,21 @@ REMOTE_TOOLS = [
         },
         "outputSchema": {"type": "object"},
         "annotations": {
-            "readOnlyHint": True,
+            "readOnlyHint": False,
             "destructiveHint": False,
             "idempotentHint": True,
-            "openWorldHint": True,
+            "openWorldHint": False,
         },
     },
     {
         "name": "update_telegram_bot_profile",
         "title": "Update a Telegram bot profile",
         "description": (
-            "Update an existing bot's Telegram profile. To use a generated or "
-            "local image as the avatar, pass its absolute path in avatar_path; "
-            "the bridge validates and uploads it without exposing the path."
+            "Overwrite selected fields in an existing bot's Telegram profile. "
+            "Removing the avatar deletes the current Telegram profile photo. To "
+            "use a generated or local image as the avatar, pass its absolute path "
+            "in avatar_path; the bridge validates and uploads it without exposing "
+            "the path."
         ),
         "inputSchema": {
             "type": "object",
@@ -316,7 +324,7 @@ REMOTE_TOOLS = [
         "outputSchema": {"type": "object"},
         "annotations": {
             "readOnlyHint": False,
-            "destructiveHint": False,
+            "destructiveHint": True,
             "idempotentHint": True,
             "openWorldHint": True,
         },

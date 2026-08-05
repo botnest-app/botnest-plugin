@@ -118,7 +118,8 @@ this repository.
 
 ## Release notes
 
-Initial public submission of botnest 1.0.0. The plugin creates, updates,
+botnest 1.0.1 aligns every production MCP tool annotation with its actual
+side effects and external interactions. The plugin creates, updates,
 diagnoses, brands, and explicitly publishes Telegram bots through the
 production botnest MCP server. It includes provider-aware LLM preflight,
 guided Telegram/OpenRouter authorization, semantic composite-flow guidance,
