@@ -133,6 +133,17 @@ class PluginPackageTests(unittest.TestCase):
                     ["create-telegram-bot/SKILL.md"],
                 )
 
+    def test_submission_json_has_independent_reviewer_cases(self):
+        submission = load_json(ROOT / "chatgpt-app-submission.json")
+        self.assertEqual(submission["$schema"], "https://developers.openai.com/apps-sdk/schemas/chatgpt-app-submission.v1.json")
+        self.assertEqual(len(submission["test_cases"]), 5)
+        self.assertEqual(len(submission["negative_test_cases"]), 3)
+        serialized = json.dumps(submission)
+        self.assertIn("BotNest Diagnostics Sample", serialized)
+        self.assertIn("BotNestOpenAIReviewBot", serialized)
+        self.assertNotIn("OPENAI_REVIEW_PASSWORD", serialized)
+        self.assertNotIn("bot_token", serialized.lower())
+
 
 class McpBridgeTests(unittest.TestCase):
     @classmethod

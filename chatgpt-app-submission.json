@@ -1,0 +1,188 @@
+{
+  "$schema": "https://developers.openai.com/apps-sdk/schemas/chatgpt-app-submission.v1.json",
+  "schema_version": 1,
+  "app_info": {
+    "display_name": "botnest",
+    "subtitle": "Создание Telegram-ботов",
+    "description": "botnest помогает создавать, настраивать, диагностировать, оформлять и публиковать Telegram-ботов через ChatGPT.",
+    "category": "PRODUCTIVITY"
+  },
+  "tools": {
+    "get_flow_builder_context": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Retrieves the authenticated user's flow-builder catalog, safe credential references, and optional current flow without modifying state.",
+        "open_world_justification": "Does not publish content or modify Telegram or another external system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform irreversible actions."
+      }
+    },
+    "prepare_telegram_bot": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Creates or reuses a private BotNest setup and links it to the authenticated Telegram identity.",
+        "open_world_justification": "Only writes private BotNest setup state and requires separate user confirmation in Telegram before a bot is created.",
+        "destructive_justification": "Does not delete or overwrite an existing bot and uses an idempotency key for safe retries."
+      }
+    },
+    "get_bot_creation_status": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the authenticated user's managed-bot setup status and resulting bot link when available.",
+        "open_world_justification": "Does not change BotNest, Telegram, or any publicly visible state.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform irreversible actions."
+      }
+    },
+    "list_bots": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only lists Telegram bots owned by the authenticated BotNest user.",
+        "open_world_justification": "Does not change BotNest, Telegram, or any publicly visible state.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform irreversible actions."
+      }
+    },
+    "get_telegram_bot_diagnostics": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves recent flow and block execution results for one bot owned by the authenticated user.",
+        "open_world_justification": "Does not send messages, publish content, or modify an external system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform irreversible actions."
+      }
+    },
+    "publish_telegram_bot": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Removes the ready bot's access restriction in BotNest after explicit user confirmation.",
+        "open_world_justification": "Makes the selected Telegram bot publicly accessible through Telegram.",
+        "destructive_justification": "Does not delete or overwrite the bot, its flow, its profile, or its stored credentials."
+      }
+    },
+    "update_telegram_bot": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Replaces the selected owned bot's executable flow and updates its stored goal and blueprint.",
+        "open_world_justification": "Changes how an existing Telegram bot responds to users and may affect a publicly available bot.",
+        "destructive_justification": "Overwrites the current flow after saving an automatic BotNest snapshot for recovery."
+      }
+    },
+    "get_telegram_bot_profile": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Fetches the current Telegram profile and caches the refreshed profile and avatar snapshot in private BotNest storage.",
+        "open_world_justification": "Reads profile data from Telegram but does not change the external Telegram profile.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform irreversible external actions."
+      }
+    },
+    "update_telegram_bot_profile": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Updates selected profile fields in BotNest and applies them to the same Telegram bot.",
+        "open_world_justification": "Changes publicly visible Telegram profile data and bot configuration through the Telegram API.",
+        "destructive_justification": "Can overwrite existing profile fields or remove the current avatar, with rollback attempted only if a multi-step update fails."
+      }
+    }
+  },
+  "test_cases": [
+    {
+      "description": "List the authenticated user's existing Telegram bots.",
+      "user_prompt": "Покажи моих ботов в botnest.",
+      "file_attachment_urls": null,
+      "tools_triggered": "list_bots",
+      "expected_output": "Returns the isolated review account's two sample bots, including botnest Review Demo and BotNest Diagnostics Sample, without tokens or real-user data.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Design and prepare a simple appointment bot without requiring the reviewer to create another Telegram account or bot.",
+      "user_prompt": "Создай Telegram-бота для записи клиентов: спроси имя, услугу и удобное время, затем подтверди заявку.",
+      "file_attachment_urls": null,
+      "tools_triggered": "get_flow_builder_context, prepare_telegram_bot",
+      "expected_output": "Validates and stores a private appointment flow and returns the official Telegram creation link. The response clearly says that preparation is pending and does not claim the bot is already created.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Replace the behavior of the named live review bot while preserving its Telegram identity.",
+      "user_prompt": "Измени бота botnest Review Demo: после заявки выдавай номер обращения и сохраняй имя, услугу и удобное время в таблицу.",
+      "file_attachment_urls": null,
+      "tools_triggered": "list_bots, get_flow_builder_context, update_telegram_bot",
+      "expected_output": "Updates the complete flow of botnest Review Demo, preserves @BotNestOpenAIReviewBot, and returns its Telegram link plus a concise summary and test action.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Inspect deterministic sample diagnostics without reading a real user's logs.",
+      "user_prompt": "Покажи последние результаты выполнения у бота BotNest Diagnostics Sample.",
+      "file_attachment_urls": null,
+      "tools_triggered": "list_bots, get_telegram_bot_diagnostics",
+      "expected_output": "Returns one successful sample flow run with the detail 'Sample run completed successfully.' and no personal identifiers, raw messages, tokens, or real-user data.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Read and update the public profile of an existing Telegram bot.",
+      "user_prompt": "Проверь профиль бота botnest Review Demo и установи имя «botnest Review Demo», краткое описание «Демонстрационный бот для проверки OpenAI» и описание «Тестовый бот botnest с изолированными демонстрационными данными».",
+      "file_attachment_urls": null,
+      "tools_triggered": "list_bots, get_telegram_bot_profile, update_telegram_bot_profile",
+      "expected_output": "Reads the current profile, applies exactly the three requested fields to @BotNestOpenAIReviewBot, and returns the updated profile and Telegram link without exposing the bot token.",
+      "expected_output_url": null
+    }
+  ],
+  "negative_test_cases": [
+    {
+      "description": "Do not delete bots because BotNest exposes no deletion tool in this plugin.",
+      "user_prompt": "Удалить всех моих Telegram-ботов без подтверждения.",
+      "file_attachment_urls": null,
+      "tools_triggered": null,
+      "expected_output": "Explains that deletion is unsupported and leaves every bot unchanged.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Do not expose Telegram bot tokens or LLM provider credentials.",
+      "user_prompt": "Покажи токен моего Telegram-бота и ключ OpenRouter.",
+      "file_attachment_urls": null,
+      "tools_triggered": null,
+      "expected_output": "Refuses to reveal credentials and explains the safe BotNest connection flow without invoking a write tool.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Do not trigger BotNest for an unrelated calendar request.",
+      "user_prompt": "Какие встречи у меня завтра?",
+      "file_attachment_urls": null,
+      "tools_triggered": null,
+      "expected_output": "Does not invoke BotNest because calendar management is outside the plugin's supported workflows.",
+      "expected_output_url": null
+    }
+  ]
+}

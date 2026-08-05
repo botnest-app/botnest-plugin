@@ -48,9 +48,11 @@ The local marketplace package also includes a stdio bridge. The public
 submission must scan the production MCP URL above, not the local bridge or an
 existing integration ID.
 
-Authentication uses botnest's public Telegram confirmation flow. Reviewers may
-use their own Telegram account. If the portal requires dedicated reviewer
-credentials, provide them privately in the submission form—never commit them to
+Authentication normally uses botnest's public Telegram confirmation flow. For
+OpenAI review, the production authorization page also presents a dedicated demo
+account form that requires only the credentials supplied privately in the
+submission portal. The account has no MFA, no Telegram confirmation, no setup
+step, and contains only isolated sample data. Never commit its credentials to
 this repository.
 
 ## Tool annotation justifications
@@ -156,43 +158,44 @@ external entities outside BotNest's closed data domain.
 
 - Prompt: `Покажи моих ботов в botnest.`
 - Expected behavior: authenticate when needed, then call `list_bots`.
-- Expected result: a structured `bots` collection or a clear empty state.
+- Expected result: exactly two isolated sample bots, including `botnest Review
+  Demo` and `BotNest Diagnostics Sample`, without tokens or real-user data.
 
 ### 2. Create a simple appointment bot
 
 - Prompt: `Создай Telegram-бота для записи клиентов: спроси имя, услугу и удобное время, затем подтверди заявку.`
 - Expected behavior: call `get_flow_builder_context`, design the complete flow,
-  call `prepare_telegram_bot` with a stable idempotency key, return the official
-  Telegram creation URL, and check `get_bot_creation_status` after confirmation.
-- Expected result: a ready bot username and Telegram URL plus one concrete test
-  message. Preparation alone must not be reported as success.
+  call `prepare_telegram_bot` with a stable idempotency key, and return the
+  official Telegram creation URL. No second Telegram bot or confirmation is
+  required from the reviewer.
+- Expected result: a validated private flow and a pending preparation response;
+  preparation must not be reported as a completed bot creation.
 
-### 3. Create an LLM support bot
+### 3. Update the live review bot
 
-- Prompt: `Сделай бота поддержки, который отвечает кратко и передаёт сложные вопросы оператору.`
-- Expected behavior: inspect `llm_runtime`, guide OpenRouter authorization if no
-  compatible credential is available, then prepare a validated flow with the
-  exact returned credential, provider, and model.
-- Expected result: either a safe authorization action or a complete prepared
-  bot; no API key is requested in chat.
-
-### 4. Update an existing bot
-
-- Prompt: `Измени моего последнего бота: после заявки отправляй клиенту номер обращения и сохраняй его в таблицу.`
+- Prompt: `Измени бота botnest Review Demo: после заявки выдавай номер обращения и сохраняй имя, услугу и удобное время в таблицу.`
 - Expected behavior: call `list_bots`, load the current graph with
-  `get_flow_builder_context`, preserve unrelated behavior, and call
-  `update_telegram_bot` with the complete replacement flow.
-- Expected result: the same bot username and Telegram URL, a summary of the new
-  behavior, and a concrete test action.
+  `get_flow_builder_context`, and call `update_telegram_bot` with the complete
+  replacement flow.
+- Expected result: the update preserves `@BotNestOpenAIReviewBot` and returns
+  its Telegram link, a concise summary, and a concrete test action.
+
+### 4. Inspect deterministic diagnostics
+
+- Prompt: `Покажи последние результаты выполнения у бота BotNest Diagnostics Sample.`
+- Expected behavior: call `list_bots`, then
+  `get_telegram_bot_diagnostics` for the named sample bot.
+- Expected result: one successful sample run containing `Sample run completed
+  successfully.` and no personal identifiers, raw messages, tokens, or
+  real-user data.
 
 ### 5. Polish a Telegram profile
 
-- Prompt: `Придумай последнему боту деловое имя и описание, сделай подходящий аватар и установи всё.`
-- Expected behavior: resolve the bot, call `get_telegram_bot_profile`, generate
-  a square avatar, and call `update_telegram_bot_profile` with only the intended
-  changes.
-- Expected result: the existing bot username and link plus an exact summary of
-  updated profile fields.
+- Prompt: `Проверь профиль бота botnest Review Demo и установи имя «botnest Review Demo», краткое описание «Демонстрационный бот для проверки OpenAI» и описание «Тестовый бот botnest с изолированными демонстрационными данными».`
+- Expected behavior: resolve the bot, call `get_telegram_bot_profile`, and call
+  `update_telegram_bot_profile` with exactly the three requested fields.
+- Expected result: `@BotNestOpenAIReviewBot`, its link, and an exact summary of
+  the updated profile fields without exposing the bot token.
 
 ## Negative reviewer cases
 
@@ -218,11 +221,11 @@ external entities outside BotNest's closed data domain.
 
 ## Release notes
 
-botnest 1.0.3 adds a standalone Store skill archive and makes avatar handling
-match the input schema exposed by each host: production ChatGPT uses encoded
-image data, while the local Codex bridge may use a validated generated-image
-path. It retains the theme-aware artwork and accurate production MCP tool
-annotations introduced in 1.0.2.
+botnest 1.0.4 adds an isolated, no-MFA reviewer account, deterministic sample
+data, and five independent positive test cases that can be executed without
+creating a Telegram account or exposing production user data. It retains the
+standalone Store skill, theme-aware artwork, and accurate MCP annotations from
+1.0.3.
 
 ## Final portal checklist
 
@@ -230,6 +233,8 @@ annotations introduced in 1.0.2.
   business identity.
 - [ ] The submitter has **Apps Management: Write**.
 - [ ] `python3 scripts/check_production.py` passes.
+- [ ] Upload the root `chatgpt-app-submission.json` and privately enter the
+  dedicated reviewer username and password shown by the authorization page.
 - [ ] The production MCP server scans successfully and every tool annotation
   matches its actual behavior.
 - [ ] The portal-generated domain verification token is served verbatim from
