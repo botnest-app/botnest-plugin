@@ -1,5 +1,8 @@
 <p align="center">
-  <img src="plugins/botnest/assets/logo.png" width="128" height="128" alt="botnest logo">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="plugins/botnest/assets/logo-dark.png">
+    <img src="plugins/botnest/assets/logo.png" width="128" height="128" alt="botnest logo">
+  </picture>
 </p>
 
 <h1 align="center">botnest for ChatGPT and Codex</h1>
@@ -75,5 +78,5 @@ supported images in Codex-generated image directories.
 
 - Privacy: <https://botnest.app/legal/privacy/>
 - Terms: <https://botnest.app/legal/offer/>
-- Support: <https://botnest.app/legal/details/>
+- Support: <https://github.com/botnest-app/botnest-plugin/issues>
 - Vulnerability reporting: [SECURITY.md](SECURITY.md)
