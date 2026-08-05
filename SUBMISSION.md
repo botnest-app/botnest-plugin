@@ -12,10 +12,13 @@ server and an uploaded skill.
 | Category | Productivity |
 | Short description | Создавайте, настраивайте и оформляйте Telegram-ботов |
 | Website | https://botnest.app/ |
-| Support | https://botnest.app/legal/details/ |
+| Support | https://github.com/botnest-app/botnest-plugin/issues |
 | Privacy policy | https://botnest.app/legal/privacy/ |
 | Terms of service | https://botnest.app/legal/offer/ |
-| Logo | `plugins/botnest/assets/logo.png` |
+| Directory icon · light | `plugins/botnest/assets/logo.png` |
+| Directory icon · dark | `plugins/botnest/assets/logo-dark.png` |
+| Composer icon · light | `plugins/botnest/assets/icon.png` |
+| Composer icon · dark | `plugins/botnest/assets/icon-dark.png` |
 
 Long description:
 
@@ -118,12 +121,11 @@ this repository.
 
 ## Release notes
 
-botnest 1.0.1 aligns every production MCP tool annotation with its actual
-side effects and external interactions. The plugin creates, updates,
-diagnoses, brands, and explicitly publishes Telegram bots through the
-production botnest MCP server. It includes provider-aware LLM preflight,
-guided Telegram/OpenRouter authorization, semantic composite-flow guidance,
-and secure avatar hand-off.
+botnest 1.0.2 adds theme-aware directory and composer artwork while preserving
+the exact botnest mark. It also aligns every production MCP tool annotation
+with its actual side effects and external interactions. The plugin creates,
+updates, diagnoses, brands, and explicitly publishes Telegram bots through the
+production botnest MCP server.
 
 ## Final portal checklist
 

@@ -71,12 +71,17 @@ class PluginPackageTests(unittest.TestCase):
         self.assertEqual(entry["policy"]["authentication"], "ON_INSTALL")
 
     def test_brand_assets_are_valid_square_pngs(self):
-        manifest = load_json(PLUGIN / ".codex-plugin" / "plugin.json")
-        for field in ("composerIcon", "logo"):
-            path = PLUGIN / manifest["interface"][field]
+        assets = {
+            "assets/logo.png": 256,
+            "assets/logo-dark.png": 256,
+            "assets/icon.png": 48,
+            "assets/icon-dark.png": 48,
+        }
+        for relative_path, minimum_size in assets.items():
+            path = PLUGIN / relative_path
             width, height = png_size(path)
             self.assertEqual(width, height)
-            self.assertGreaterEqual(width, 48)
+            self.assertGreaterEqual(width, minimum_size)
             self.assertLessEqual(width, 4096)
             self.assertLessEqual(path.stat().st_size, 5 * 1024 * 1024)
 
