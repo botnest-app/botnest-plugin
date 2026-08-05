@@ -51,6 +51,7 @@ conversation.
 │   └── skills/
 ├── scripts/                          # validation and packaging helpers
 ├── tests/
+├── chatgpt-app-submission.json       # upload-ready OpenAI review form data
 └── SUBMISSION.md                     # OpenAI review form copy and test cases
 ```
 
