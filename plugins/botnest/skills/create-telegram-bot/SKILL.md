@@ -12,13 +12,13 @@ as little friction as possible.
 
 1. If a BotNest tool returns `authorization_required`, show its HTTPS
    `authorization_url` as a clickable primary action. Tell the user to confirm
-   with Telegram and return to Codex. Never ask them to copy or paste a
-   localhost callback, authorization code, device code, password, API key, or
-   Telegram bot token.
+   with Telegram and return to this conversation. Never ask them to copy or
+   paste a localhost callback, authorization code, device code, password, API
+   key, or Telegram bot token.
 2. When the user continues after Telegram confirmation, retry the original
-   BotNest tool with the same arguments. The local bridge exchanges and stores
-   the OAuth session automatically. If authorization is still pending, keep
-   showing the same HTTPS URL; do not start a duplicate flow.
+   BotNest tool with the same arguments. The host connection completes and
+   stores the OAuth session automatically. If authorization is still pending,
+   keep showing the same HTTPS URL; do not start a duplicate flow.
 3. Treat the user's original description as the source of truth. Preserve all
    requested behavior, questions, tone, data to collect, and success criteria.
 4. Ask a follow-up only when the request does not contain enough information to
@@ -111,9 +111,9 @@ public Telegram URL.
 
 ## LLM runtime credentials
 
-Treat graph generation and graph execution as separate concerns. Codex can
-design a graph without a BotNest AI subscription, but every runtime `llm` block
-must reference a usable BotNest credential.
+Treat graph generation and graph execution as separate concerns. The assistant
+can design a graph without a BotNest AI subscription, but every runtime `llm`
+block must reference a usable BotNest credential.
 
 1. Read `llm_runtime` from the latest `get_flow_builder_context` result before
    preparing or updating any graph that contains an `llm` block.
@@ -132,7 +132,7 @@ must reference a usable BotNest credential.
 4. If no credential is available, do not call `prepare_telegram_bot` or
    `update_telegram_bot` with the LLM graph. Keep the complete requested graph
    in the conversation while the user authorizes OpenRouter. Never ask the user
-   to paste an API key into ChatGPT, Codex, Claude, or the conversation.
+   to paste an API key into any chat or conversation.
 5. After authorization, call `get_flow_builder_context` again. Proceed only
    from the fresh response and confirm that the exact selected credential,
    provider, and model are compatible.
@@ -204,19 +204,24 @@ commands, menu button, language versions, or suggested administrator rights.
    capability first. Generate a square, icon-like composition with a clear
    central subject, generous edge padding, no tiny details, no watermark, and
    no text unless the user explicitly requests text.
-2. Use the actual saved local image returned by the image tool under Codex's
-   generated-images directory. If an existing image lives elsewhere, copy the
-   selected image into that generated-images directory before continuing.
-   Never invent a path and never paste image bytes or base64 into the
-   conversation.
-3. Call `update_telegram_bot_profile` with the resolved `bot_id` and the
-   image's absolute `avatar_path`. The local bridge accepts PNG, JPEG, or WebP
-   files up to 10 MB from Codex-generated image directories, then validates and
-   uploads them without exposing the local path to BotNest.
-4. If the user asked to generate and install the avatar, do both in the same
+2. Inspect the exposed input schema for `update_telegram_bot_profile`; different
+   hosts transport image data differently. Use only an image field that the
+   current schema actually exposes.
+3. When the schema exposes `avatar_base64`, pass the actual generated PNG,
+   JPEG, or WebP bytes as base64 together with the matching
+   `avatar_mime_type`. The decoded image must be at most 10 MB. Never print or
+   paste the encoded bytes into the conversation.
+4. When the schema exposes `avatar_path`, pass the actual absolute saved path
+   returned by the image tool. Use only a supported PNG, JPEG, or WebP inside
+   the host's permitted generated-image directory. Never invent a path or use
+   an unrelated local file.
+5. If the current host cannot supply either accepted input form, do not claim
+   that the avatar was installed. Return the generated image and explain the
+   exact transport limitation.
+6. If the user asked to generate and install the avatar, do both in the same
    workflow without asking them to upload it manually. Show the final image and
    Telegram bot link only after Telegram accepts it.
-5. Remove an avatar only when the user explicitly asks, using
+7. Remove an avatar only when the user explicitly asks, using
    `remove_avatar: true`.
 
 ## Reactions and stateful behavior
@@ -334,9 +339,10 @@ unchanged. Do not revert to an older behavior unless the user explicitly asks.
 - Use `get_telegram_bot_profile` for current Telegram-facing settings. A
   `telegram_profile_refresh_failed` warning means cached settings were returned;
   do not treat it as a successful live refresh.
-- For `avatar_file_unavailable`, verify that the image exists at the actual
-  absolute saved path inside the Codex image directory. Do not
-  request a bot token or send an arbitrary local file.
+- For `avatar_file_unavailable` on a host that exposes `avatar_path`, verify
+  that the image exists at the actual absolute saved path inside the permitted
+  generated-image directory. Do not request a bot token or send an arbitrary
+  local file.
 - If botnest requests authentication, tell the user to connect through the
   returned production HTTPS Telegram authorization screen. Do not invoke native
   loopback OAuth or suggest Google login, passwords, API keys, callback

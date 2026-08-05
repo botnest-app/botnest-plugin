@@ -62,9 +62,10 @@ python3 scripts/build_package.py
 python3 scripts/check_production.py
 ```
 
-The package command creates `dist/botnest-<version>.zip`. The production check
-verifies the MCP endpoint, OAuth discovery, and public legal/support pages used
-by the OpenAI submission.
+The package command creates `dist/botnest-<version>.zip` and the standalone
+`dist/create-telegram-bot-skill.zip` accepted by the OpenAI submission form.
+The production check verifies the MCP endpoint, OAuth discovery, and public
+legal/support pages used by the OpenAI submission.
 
 For the exact listing copy, MCP configuration, reviewer scenarios, and final
 portal checklist, see [SUBMISSION.md](SUBMISSION.md).

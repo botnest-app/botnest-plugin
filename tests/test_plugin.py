@@ -5,6 +5,8 @@ import json
 import struct
 import unittest
 from pathlib import Path
+from tempfile import TemporaryDirectory
+from zipfile import ZipFile
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -108,6 +110,28 @@ class PluginPackageTests(unittest.TestCase):
         self.assertIn("Never ask the user to paste a Telegram bot token", skill)
         self.assertIn("explicitly asks to publish", skill)
         self.assertIn("get_telegram_bot_diagnostics", skill)
+        self.assertIn("avatar_base64", skill)
+        self.assertIn("avatar_path", skill)
+        self.assertNotIn("return to Codex", skill)
+        self.assertNotIn("The local bridge exchanges", skill)
+
+    def test_store_skill_archive_has_one_top_level_skill(self):
+        build_script = ROOT / "scripts" / "build_package.py"
+        module_spec = importlib.util.spec_from_file_location(
+            "build_package", build_script
+        )
+        module = importlib.util.module_from_spec(module_spec)
+        assert module_spec and module_spec.loader
+        module_spec.loader.exec_module(module)
+        with TemporaryDirectory() as directory:
+            output = Path(directory) / "create-telegram-bot-skill.zip"
+            skill = PLUGIN / "skills" / "create-telegram-bot"
+            module.write_archive(output, skill, [skill / "SKILL.md"])
+            with ZipFile(output) as archive:
+                self.assertEqual(
+                    archive.namelist(),
+                    ["create-telegram-bot/SKILL.md"],
+                )
 
 
 class McpBridgeTests(unittest.TestCase):
