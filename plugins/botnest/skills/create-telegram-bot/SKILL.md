@@ -264,6 +264,43 @@ commands, menu button, language versions, or suggested administrator rights.
   `get_telegram_bot_diagnostics` before explaining the cause. Use the returned
   executed block names and details as evidence; do not invent runtime logs.
 
+## Telegram administration
+
+- Use the dedicated semantic blocks returned by the live catalog instead of an
+  HTTP block or an invented universal Telegram method: `telegram_member` for
+  users, administrators, sender chats, and join requests; `telegram_chat` for
+  default permissions, invite links, and chat settings; `telegram_message` for
+  deletion, pins, polls, reactions, and suggested posts; `telegram_topic` for
+  forum topics.
+- Route membership automation from the unified input's `member_update`,
+  `bot_member_update`, or `join_request` output. A join-request decision uses
+  `${join_request.user_id}`. Ordinary message moderation normally uses
+  `${message.from_user_id}` and `${message.message_id}`.
+- For a temporary user mute or ban, set `duration_seconds` to a value from 30
+  through 31622400. Use `permissions_preset: none` to mute and
+  `permissions_preset: all` to lift restrictions. Use `custom` with
+  `use_independent_chat_permissions: true` for selective rules such as allowing
+  text while blocking photos, voice notes, polls, reactions, or link previews.
+- Use `kick` to remove a current member while still allowing them to join the
+  chat again; use `ban` when they must not be able to return until unbanned.
+- Default chat permissions have no Telegram expiry. For a temporary whole-chat
+  lockdown, execute `telegram_chat` `set_permissions` with preset `none`, then
+  restore the intended `all` or `custom` permissions through a later
+  delay/schedule branch. Never describe a single set-permissions call as
+  temporary.
+- Promotion is explicit: enable only the administrator rights the user asked
+  for. `demote` clears them. Telegram still requires the bot to be an
+  administrator with the matching right and sufficient administrator
+  hierarchy; a saved graph does not grant those rights.
+- Every administration block writes `success`, `action`, `telegram_method`,
+  `result`, `error`, and normalized chat/user/message/topic identifiers under
+  its unique `output_field`. Use these fields downstream and diagnose a failed
+  live action before changing the graph.
+- `telegram_chat` `set_photo` accepts only a Telegram `file_id` (normally
+  `${message.photo_file_id}`). The runtime downloads it through Telegram and
+  performs the required multipart InputFile upload. Never substitute a URL,
+  local path, HTTP block, or bot token.
+
 ## Semantic composite blocks
 
 - Read `graph_design` from `get_flow_builder_context` before designing or
