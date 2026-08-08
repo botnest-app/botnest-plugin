@@ -1,8 +1,8 @@
-# OpenAI plugin submission
+# ChatGPT app directory submission
 
-This is the reviewer-ready source of truth for the first public botnest plugin
-submission. Submit it as **With MCP** because it combines a production MCP
-server and an uploaded skill.
+This is the reviewer-ready source of truth for the public botnest ChatGPT
+submission. Submit it as **With MCP** because ChatGPT connects directly to the
+production remote MCP with OAuth and uses the uploaded shared skill.
 
 ## Listing
 
@@ -44,9 +44,9 @@ Starter prompts:
 | Custom UI | None |
 | Content security policy | Not applicable; the plugin does not ship a web component |
 
-The local marketplace package also includes a stdio bridge. The public
-submission must scan the production MCP URL above, not the local bridge or an
-existing integration ID.
+The separate Codex marketplace package includes a local stdio bridge. The
+ChatGPT submission must scan the production MCP URL above, not the Codex bridge
+or an existing integration ID.
 
 Authentication normally uses botnest's public Telegram confirmation flow. For
 OpenAI review, the production authorization page also presents a dedicated demo

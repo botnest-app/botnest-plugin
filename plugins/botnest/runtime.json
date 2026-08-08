@@ -1,0 +1,13 @@
+{
+  "version": "1.1.0",
+  "base_url": "https://botnest.app",
+  "mcp_url": "https://botnest.app/mcp",
+  "oauth": {
+    "token_url": "https://botnest.app/oauth/token",
+    "device_authorization_url": "https://botnest.app/oauth/device",
+    "resource": "https://botnest.app/mcp",
+    "device_client_id": "botnest-codex-device",
+    "device_grant_type": "urn:ietf:params:oauth:grant-type:device_code",
+    "scopes": "bots:read bots:create bots:publish"
+  }
+}

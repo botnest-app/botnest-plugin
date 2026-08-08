@@ -1,0 +1,12 @@
+{
+  "platform": "chatgpt",
+  "distribution": "remote-mcp",
+  "directory": "ChatGPT app directory",
+  "mcp_server_url": "https://botnest.app/mcp",
+  "oauth": {
+    "protected_resource_metadata": "https://botnest.app/.well-known/oauth-protected-resource/mcp",
+    "authorization_server_metadata": "https://botnest.app/.well-known/oauth-authorization-server"
+  },
+  "submission_file": "chatgpt-app-submission.json",
+  "skill_archive": "create-telegram-bot-skill.zip"
+}
