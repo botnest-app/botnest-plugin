@@ -16,14 +16,32 @@ from pathlib import Path
 from typing import Any
 
 
-BASE_URL = "https://botnest.app"
-MCP_URL = f"{BASE_URL}/mcp"
-TOKEN_URL = f"{BASE_URL}/oauth/token"
-DEVICE_URL = f"{BASE_URL}/oauth/device"
-RESOURCE = MCP_URL
-CLIENT_ID = "botnest-codex-device"
-DEVICE_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:device_code"
-SCOPES = "bots:read bots:create bots:publish"
+def _runtime_config() -> dict[str, Any]:
+    path = Path(__file__).resolve().parents[1] / "runtime.json"
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError, OSError):
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
+RUNTIME = _runtime_config()
+OAUTH = RUNTIME.get("oauth") if isinstance(RUNTIME.get("oauth"), dict) else {}
+BASE_URL = str(RUNTIME.get("base_url") or "https://botnest.app").rstrip("/")
+MCP_URL = str(RUNTIME.get("mcp_url") or f"{BASE_URL}/mcp")
+TOKEN_URL = str(OAUTH.get("token_url") or f"{BASE_URL}/oauth/token")
+DEVICE_URL = str(
+    OAUTH.get("device_authorization_url") or f"{BASE_URL}/oauth/device"
+)
+RESOURCE = str(OAUTH.get("resource") or MCP_URL)
+CLIENT_ID = str(OAUTH.get("device_client_id") or "botnest-codex-device")
+DEVICE_GRANT_TYPE = str(
+    OAUTH.get("device_grant_type")
+    or "urn:ietf:params:oauth:grant-type:device_code"
+)
+SCOPES = str(OAUTH.get("scopes") or "bots:read bots:create bots:publish")
+PLUGIN_VERSION = str(RUNTIME.get("version") or "dev")
+USER_AGENT = f"BotNest-Plugin/{PLUGIN_VERSION}"
 PROTOCOL_VERSION = "2025-11-25"
 MAX_AVATAR_BYTES = 10 * 1024 * 1024
 
@@ -400,7 +418,7 @@ def _post_form(url: str, values: dict[str, object]) -> dict[str, Any]:
         headers={
             "Accept": "application/json",
             "Content-Type": "application/x-www-form-urlencoded",
-            "User-Agent": "BotNest-Codex-Plugin/0.5",
+            "User-Agent": USER_AGENT,
         },
         method="POST",
     )
@@ -422,7 +440,7 @@ def _post_mcp(access_token: str, payload: dict[str, Any]) -> dict[str, Any]:
             "Accept": "application/json",
             "Authorization": f"Bearer {access_token}",
             "Content-Type": "application/json",
-            "User-Agent": "BotNest-Codex-Plugin/0.5",
+            "User-Agent": USER_AGENT,
         },
         method="POST",
     )

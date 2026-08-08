@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Verify the public endpoints required by OpenAI plugin review."""
+"""Verify public endpoints used by BotNest platform integrations."""
 
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 import urllib.error
@@ -62,7 +63,23 @@ def expect_mcp_auth_challenge() -> None:
     raise RuntimeError("POST /mcp unexpectedly allowed an unauthenticated request")
 
 
-def main() -> None:
+def expect_oauth_endpoint(path: str, *, method: str) -> None:
+    request = urllib.request.Request(
+        f"{BASE}{path}",
+        data=b"" if method == "POST" else None,
+        method=method,
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=15) as response:
+            if response.status == 404:
+                raise RuntimeError(f"{method} {path} returned 404")
+    except urllib.error.HTTPError as error:
+        if error.code in {400, 401}:
+            return
+        raise RuntimeError(f"{method} {path} returned {error.code}") from error
+
+
+def main(*, include_alice: bool = False) -> None:
     resource = get_json("/.well-known/oauth-protected-resource/mcp")
     if resource.get("resource") != f"{BASE}/mcp":
         raise RuntimeError("protected-resource metadata points at the wrong MCP URL")
@@ -72,14 +89,25 @@ def main() -> None:
         raise RuntimeError("authorization-server metadata has the wrong issuer")
 
     expect_mcp_auth_challenge()
+    if include_alice:
+        expect_oauth_endpoint("/oauth/alice/authorize", method="GET")
+        expect_oauth_endpoint("/oauth/alice/token", method="POST")
     for path in ("/legal/privacy/", "/legal/offer/", "/legal/details/"):
         expect_page(path)
-    print("Production review preflight passed.")
+    suffix = " including Alice" if include_alice else ""
+    print(f"Production review preflight passed{suffix}.")
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--include-alice",
+        action="store_true",
+        help="Also require the confidential Yandex Alice OAuth endpoints.",
+    )
+    args = parser.parse_args()
     try:
-        main()
+        main(include_alice=args.include_alice)
     except (RuntimeError, urllib.error.URLError, json.JSONDecodeError) as error:
         print(f"Production review preflight failed: {error}", file=sys.stderr)
         raise SystemExit(1) from None

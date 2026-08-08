@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "botnest": {
+      "type": "http",
+      "url": "https://botnest.app/mcp"
+    }
+  }
+}

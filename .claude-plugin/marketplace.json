@@ -1,0 +1,20 @@
+{
+  "name": "botnest",
+  "owner": {
+    "name": "botnest",
+    "email": "support@botnest.app",
+    "url": "https://botnest.app/"
+  },
+  "metadata": {
+    "description": "Official botnest integrations for creating and managing Telegram bots.",
+    "version": "1.1.0"
+  },
+  "plugins": [
+    {
+      "name": "botnest",
+      "description": "Create, improve, diagnose, brand, and publish production-ready Telegram bots with botnest.",
+      "source": "./platforms/claude-grok/botnest",
+      "category": "productivity"
+    }
+  ]
+}

@@ -5,26 +5,63 @@
   </picture>
 </p>
 
-<h1 align="center">botnest for ChatGPT and Codex</h1>
+<h1 align="center">botnest integrations</h1>
 
 <p align="center">
-  Create, improve, diagnose, brand, and publish Telegram bots using plain language.
+  One product source for ChatGPT, Codex, Claude, Grok, and Yandex Alice.
 </p>
 
-This repository contains one production plugin: **botnest**. It combines a
-focused workflow skill with a local MCP bridge to the production service at
-`https://botnest.app/mcp`.
+This repository is the distribution monorepo for **botnest**. Product metadata,
+the agent workflow, brand assets, and the production MCP contract are maintained
+once and rendered into the platform packages that need them.
 
-## What it does
+The BotNest application backend remains a separate service and repository. It
+owns user data, OAuth grants, Telegram credentials, and the production MCP at
+`https://botnest.app/mcp`; none of those secrets are copied into a plugin.
 
-- Designs complete Telegram bot flows from a natural-language brief.
-- Creates and updates bot behavior without asking users for Telegram tokens.
-- Connects compatible LLM credentials through a guided OpenRouter flow.
-- Diagnoses failed flow runs before proposing changes.
-- Updates bot names, descriptions, commands, menus, localizations, and avatars.
-- Publishes a ready bot only after explicit user confirmation.
+## Platform model
 
-## Install
+| Platform | Distribution | Runtime connection |
+| --- | --- | --- |
+| ChatGPT | ChatGPT app directory submission | Direct remote MCP + native OAuth; works on mobile |
+| Codex | OpenAI plugin marketplace package | Local stdio bridge + Telegram device authorization |
+| Claude | Claude plugin marketplace package | Direct remote MCP + native OAuth |
+| Grok | The same Claude-compatible package | Direct remote MCP + native OAuth |
+| Yandex Alice | Public Alice catalog skill | HTTPS webhook + Alice account linking |
+
+OpenAI intentionally has two adapters. ChatGPT uses the remote MCP/OAuth path,
+while the installable Codex plugin keeps the local bridge path. They share the
+same BotNest tools and workflow rather than maintaining separate product logic.
+
+## Source of truth
+
+- `botnest.plugin.json` is the canonical version, listing, service URL, and
+  platform configuration.
+- `plugins/botnest/skills/create-telegram-bot/SKILL.md` is the shared agent
+  workflow used by ChatGPT, Codex, Claude, and Grok.
+- `plugins/botnest/assets/` contains the shared brand assets.
+- `plugins/botnest/scripts/botnest_mcp_proxy.py` is Codex-specific transport.
+- `adapters/alice/handler.py` is Alice-specific conversation and webhook logic.
+- `chatgpt-app-submission.json` contains OpenAI-specific review cases and tool
+  policy justifications.
+
+`scripts/generate_platforms.py` renders the Codex manifest and marketplace, the
+ChatGPT remote-connector descriptor, the Claude/Grok package and marketplace,
+the runtime configuration, and the Alice publication settings. Generated drift
+is a CI error, so generated platform copies cannot silently diverge.
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for boundaries and release rules.
+
+## Install and publish
+
+### ChatGPT
+
+Submit `https://botnest.app/mcp` as the remote MCP server using the data in
+`chatgpt-app-submission.json` and `SUBMISSION.md`. ChatGPT performs the OAuth
+flow against BotNest directly; the standalone skill archive is produced for the
+submission flow when needed.
+
+### Codex
 
 Python 3.10 or newer is required for the bundled local MCP bridge.
 
@@ -33,50 +70,63 @@ codex plugin marketplace add botnest-app/botnest-plugin --ref main
 codex plugin add botnest@botnest
 ```
 
-Restart the ChatGPT desktop app, enable **botnest** in Plugins, and start a new
-conversation. Authentication happens through botnest's HTTPS Telegram flow;
-never paste a bot token, API key, callback URL, or authorization code into the
-conversation.
+Restart the app, enable **botnest**, and start a new conversation.
 
-## Repository layout
+### Claude
 
 ```text
-.
-├── .agents/plugins/marketplace.json  # standalone botnest marketplace
-├── plugins/botnest/                  # the only plugin package
-│   ├── .codex-plugin/plugin.json
-│   ├── .mcp.json
-│   ├── assets/
-│   ├── scripts/
-│   └── skills/
-├── scripts/                          # validation and packaging helpers
-├── tests/
-├── chatgpt-app-submission.json       # upload-ready OpenAI review form data
-└── SUBMISSION.md                     # OpenAI review form copy and test cases
+/plugin marketplace add botnest-app/botnest-plugin
+/plugin install botnest@botnest
 ```
 
-## Validate and package
+The generated package under `platforms/claude-grok/botnest` connects directly
+to the production MCP and lets Claude handle OAuth.
+
+### Grok
+
+Add this GitHub repository as a marketplace in Grok's extensions UI and install
+**botnest**. Grok reads the Claude marketplace, plugin, skill, and MCP format,
+so no Grok-specific copy is maintained.
+
+### Yandex Alice
+
+Deploy `adapters/alice/handler.py` as the HTTPS webhook and configure the Dialog
+from `adapters/alice/publication.json`. Before catalog submission, the BotNest
+backend must expose the confidential Alice OAuth endpoints described in the
+adapter README. The existing public MCP PKCE client and Codex device client are
+not interchangeable with Alice account linking.
+
+## Change once, release everywhere
+
+1. Edit `botnest.plugin.json`, the shared skill/assets, or a genuinely
+   platform-specific adapter.
+2. Regenerate tracked platform artifacts.
+3. Run tests, build archives, and check the production MCP.
 
 ```bash
+python3 scripts/generate_platforms.py
+python3 scripts/generate_platforms.py --check
 python3 -m unittest discover -s tests -v
 python3 scripts/build_package.py
 python3 scripts/check_production.py
+# After the Alice OAuth backend is deployed:
+python3 scripts/check_production.py --include-alice
 ```
 
-The package command creates `dist/botnest-<version>.zip` and the standalone
-`dist/create-telegram-bot-skill.zip` accepted by the OpenAI submission form.
-The production check verifies the MCP endpoint, OAuth discovery, and public
-legal/support pages used by the OpenAI submission.
+The package command creates:
 
-For the exact listing copy, MCP configuration, reviewer scenarios, and final
-portal checklist, see [SUBMISSION.md](SUBMISSION.md).
+- `dist/botnest-codex-<version>.zip`
+- `dist/botnest-claude-grok-<version>.zip`
+- `dist/botnest-alice-<version>.zip`
+- `dist/create-telegram-bot-skill.zip`
 
 ## Security and privacy
 
-The local bridge stores OAuth credentials inside the plugin's private
-`PLUGIN_DATA` directory with restrictive filesystem permissions. It never asks
-for Telegram bot tokens or LLM API keys in chat. Avatar uploads are limited to
-supported images in Codex-generated image directories.
+The Codex bridge stores OAuth credentials inside the plugin's private data
+directory with restrictive permissions. Remote-MCP platforms keep OAuth in
+their native connector flow. The Alice adapter receives a short-lived BotNest
+access token through Yandex account linking and never stores it. No adapter asks
+users to paste Telegram bot tokens or LLM API keys into a conversation.
 
 - Privacy: <https://botnest.app/legal/privacy/>
 - Terms: <https://botnest.app/legal/offer/>

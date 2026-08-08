@@ -1,0 +1,89 @@
+{
+  "name": "botnest",
+  "version": "1.1.0",
+  "description": "Create, improve, diagnose, brand, and publish production-ready Telegram bots with botnest.",
+  "author": {
+    "name": "botnest",
+    "email": "support@botnest.app",
+    "url": "https://botnest.app/"
+  },
+  "homepage": "https://botnest.app/",
+  "repository": "https://github.com/botnest-app/botnest-plugin",
+  "keywords": [
+    "telegram",
+    "bots",
+    "automation",
+    "no-code",
+    "botnest"
+  ],
+  "service": {
+    "base_url": "https://botnest.app",
+    "mcp_url": "https://botnest.app/mcp",
+    "oauth": {
+      "token_url": "https://botnest.app/oauth/token",
+      "device_authorization_url": "https://botnest.app/oauth/device",
+      "resource": "https://botnest.app/mcp",
+      "device_client_id": "botnest-codex-device",
+      "device_grant_type": "urn:ietf:params:oauth:grant-type:device_code",
+      "scopes": "bots:read bots:create bots:publish"
+    }
+  },
+  "chatgpt": {
+    "distribution": "remote-mcp",
+    "directory": "ChatGPT app directory",
+    "submission_file": "chatgpt-app-submission.json",
+    "skill_archive": "create-telegram-bot-skill.zip"
+  },
+  "codex": {
+    "marketplace_name": "botnest",
+    "category": "Productivity",
+    "interface": {
+      "displayName": "botnest",
+      "shortDescription": "Создавайте, настраивайте и оформляйте Telegram-ботов",
+      "longDescription": "Создавайте, изменяйте и публикуйте Telegram-ботов обычными словами. botnest проектирует и проверяет сценарии, подключает LLM-провайдера, помогает диагностировать ошибки и настраивает имя, описание, команды и аватар.",
+      "developerName": "botnest",
+      "category": "Productivity",
+      "capabilities": [
+        "Interactive",
+        "Write"
+      ],
+      "websiteURL": "https://botnest.app/",
+      "privacyPolicyURL": "https://botnest.app/legal/privacy/",
+      "termsOfServiceURL": "https://botnest.app/legal/offer/",
+      "defaultPrompt": [
+        "Создай Telegram-бота для записи клиентов",
+        "Сделай бота поддержки по моему описанию",
+        "Измени поведение и оформление моего последнего бота"
+      ],
+      "brandColor": "#6557E8",
+      "composerIcon": "./assets/icon.png",
+      "logo": "./assets/logo.png",
+      "logoDark": "./assets/logo-dark.png"
+    }
+  },
+  "claude": {
+    "marketplace_name": "botnest",
+    "marketplace_description": "Official botnest integrations for creating and managing Telegram bots.",
+    "category": "productivity"
+  },
+  "grok": {
+    "distribution": "claude-compatible",
+    "package": "platforms/claude-grok/botnest"
+  },
+  "alice": {
+    "name": "botnest — конструктор Telegram-ботов",
+    "activation_names": [
+      "ботнест",
+      "бот нест"
+    ],
+    "description": "Создавайте и управляйте Telegram-ботами голосом через botnest.",
+    "webhook_url": "https://botnest.app/alice/webhook/",
+    "oauth": {
+      "authorization_url": "https://botnest.app/oauth/alice/authorize",
+      "token_url": "https://botnest.app/oauth/alice/token",
+      "refresh_url": "https://botnest.app/oauth/alice/token",
+      "redirect_uri": "https://social.yandex.net/broker/redirect",
+      "scope": "bots:read&bots:create&bots:publish"
+    }
+  }
+}

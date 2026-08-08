@@ -19,9 +19,11 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Compile the MCP bridge
-        run: python -m compileall -q plugins/botnest/scripts
+      - name: Compile Python adapters
+        run: python -m compileall -q plugins/botnest/scripts adapters/alice scripts
+      - name: Check generated platform packages
+        run: python scripts/generate_platforms.py --check
       - name: Validate package and behavior
         run: python -m unittest discover -s tests -v
-      - name: Build the review archive
+      - name: Build platform archives
         run: python scripts/build_package.py

@@ -34,6 +34,13 @@ def png_size(path: Path) -> tuple[int, int]:
 
 
 class PluginPackageTests(unittest.TestCase):
+    def test_canonical_config_is_the_metadata_source_of_truth(self):
+        config = load_json(ROOT / "botnest.plugin.json")
+        manifest = load_json(PLUGIN / ".codex-plugin" / "plugin.json")
+        self.assertEqual(manifest["name"], config["name"])
+        self.assertEqual(manifest["version"], config["version"])
+        self.assertEqual(manifest["description"], config["description"])
+
     def test_repository_contains_exactly_one_plugin(self):
         plugin_names = sorted(path.name for path in (ROOT / "plugins").iterdir() if path.is_dir())
         self.assertEqual(plugin_names, ["botnest"])
@@ -161,6 +168,8 @@ class McpBridgeTests(unittest.TestCase):
     def test_bridge_targets_production(self):
         self.assertEqual(self.proxy.BASE_URL, "https://botnest.app")
         self.assertEqual(self.proxy.MCP_URL, "https://botnest.app/mcp")
+        self.assertEqual(self.proxy.PLUGIN_VERSION, "1.1.0")
+        self.assertEqual(self.proxy.USER_AGENT, "BotNest-Plugin/1.1.0")
 
     def test_mcp_manifest_uses_the_production_bridge(self):
         config = load_json(PLUGIN / ".mcp.json")
