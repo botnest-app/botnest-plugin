@@ -25,6 +25,11 @@ def json_bytes(payload: object) -> bytes:
 
 
 def codex_manifest(config: dict[str, Any]) -> dict[str, Any]:
+    interface = {
+        **config["codex"]["interface"],
+        "privacyPolicyURL": config["legal"]["privacy_policy_url"],
+        "termsOfServiceURL": config["legal"]["terms_of_service_url"],
+    }
     return {
         "name": config["name"],
         "version": config["version"],
@@ -32,21 +37,25 @@ def codex_manifest(config: dict[str, Any]) -> dict[str, Any]:
         "author": config["author"],
         "homepage": config["homepage"],
         "repository": config["repository"],
+        "license": config["license"],
         "keywords": config["keywords"],
         "skills": "./skills/",
         "mcpServers": "./.mcp.json",
-        "interface": config["codex"]["interface"],
+        "interface": interface,
     }
 
 
 def claude_manifest(config: dict[str, Any]) -> dict[str, Any]:
     return {
         "name": config["name"],
+        "displayName": config["claude"]["display_name"],
         "version": config["version"],
         "description": config["description"],
         "author": config["author"],
         "homepage": config["homepage"],
         "repository": config["repository"],
+        "license": config["license"],
+        "keywords": config["keywords"],
     }
 
 
@@ -168,27 +177,100 @@ def alice_runtime(config: dict[str, Any]) -> dict[str, Any]:
 
 
 def claude_readme(config: dict[str, Any]) -> bytes:
-    text = f"""# botnest for Claude and Grok
+    legal = config["legal"]
+    text = f"""# BotNest for Claude and Grok
 
-This package is generated from the shared BotNest source in
-`plugins/botnest`. Do not edit generated files here.
+Create, inspect, improve, diagnose, brand, and publish Telegram bots from a
+plain-language request. This package bundles the BotNest workflow skill with a
+remote MCP connector to `{config['service']['mcp_url']}`.
 
-It connects {config['name']} directly to `{config['service']['mcp_url']}`.
-Claude handles the remote MCP OAuth flow natively. Grok uses the same package
-through its Claude Code compatibility layer.
+## Connect
 
-See the repository root README for installation and release instructions.
+1. Install and enable **BotNest**.
+2. Select **Connect** or **Authorize** when Claude prompts for the BotNest
+   connector.
+3. Complete the BotNest HTTPS sign-in flow. BotNest may ask you to confirm your
+   identity in Telegram, then returns you to Claude.
+4. Retry the original request after authorization completes.
+
+Never paste Telegram bot tokens, OAuth codes, passwords, or LLM API keys into a
+Claude conversation. See `SETUP.md` for recovery steps.
+
+## Example prompts
+
+- `Покажи моих Telegram-ботов в BotNest.`
+- `Создай Telegram-бота для записи клиентов: спроси имя, услугу и время.`
+- `Проверь последние ошибки моего бота и объясни, что исправить.`
+
+Bot creation remains private until the user completes the Telegram confirmation
+step. Publishing a ready bot is a separate action and requires an explicit user
+request or confirmation.
+
+## Data and permissions
+
+The connector sends only the arguments needed for the selected BotNest tool to
+the production BotNest service. OAuth access is limited to reading, creating,
+updating, and publishing bots owned by the authenticated user. The package has
+no local hooks, background processes, telemetry, or bundled executable code.
+
+- Privacy policy: {legal['privacy_policy_url']}
+- Terms of service: {legal['terms_of_service_url']}
+- Support and issue reporting: {legal['support_url']}
+- Source: {config['repository']}
+
+## Troubleshooting
+
+- If Claude reports that authorization is required, open the HTTPS authorization
+  action again and finish the Telegram confirmation before retrying.
+- If a bot is still being provisioned, ask for its creation status instead of
+  starting another creation flow.
+- If a tool fails, keep the returned error code and contact support without
+  sharing tokens, credentials, or private bot data.
+
+This package is generated from the shared BotNest source. Do not edit generated
+files under `platforms/claude-grok/botnest` directly. Grok Build uses the same
+package through its Claude Code compatibility layer.
+
+Licensed under the Apache License 2.0. See `LICENSE`.
+"""
+    return text.encode("utf-8")
+
+
+def claude_setup(config: dict[str, Any]) -> bytes:
+    text = f"""# Set up BotNest
+
+Use these instructions when the BotNest plugin is installed but its remote MCP
+connector is not yet authenticated or a BotNest tool returns
+`authorization_required`.
+
+1. Confirm that the configured connector URL is exactly
+   `{config['service']['mcp_url']}`.
+2. Start Claude's native **Connect** or **Authorize** action for BotNest.
+3. Open only the HTTPS BotNest authorization page shown by Claude. Complete the
+   sign-in and Telegram confirmation there.
+4. Return to the same conversation and retry the original request with the same
+   arguments. For bot creation, preserve the original idempotency key.
+5. Verify the connection with a read-only request such as listing the user's
+   bots before continuing a write workflow.
+
+Never ask the user to paste a Telegram bot token, OAuth authorization code,
+device code, password, client secret, or LLM API key. Do not replace the
+configured MCP URL with localhost, a tunnel, or another domain. If the HTTPS
+authorization page or connector remains unavailable, stop and direct the user
+to {config['legal']['support_url']}.
 """
     return text.encode("utf-8")
 
 
 def generated_files(config: dict[str, Any]) -> dict[Path, bytes]:
+    license_bytes = (ROOT / "LICENSE").read_bytes()
     result = {
         CODEX_PLUGIN / ".codex-plugin" / "plugin.json": json_bytes(
             codex_manifest(config)
         ),
         CODEX_PLUGIN / ".mcp.json": json_bytes(codex_mcp(config)),
         CODEX_PLUGIN / "runtime.json": json_bytes(runtime_config(config)),
+        CODEX_PLUGIN / "LICENSE": license_bytes,
         ROOT / ".agents" / "plugins" / "marketplace.json": json_bytes(
             codex_marketplace(config)
         ),
@@ -203,12 +285,15 @@ def generated_files(config: dict[str, Any]) -> dict[Path, bytes]:
         ),
         CLAUDE_GROK_PLUGIN / ".mcp.json": json_bytes(remote_mcp(config)),
         CLAUDE_GROK_PLUGIN / "README.md": claude_readme(config),
+        CLAUDE_GROK_PLUGIN / "SETUP.md": claude_setup(config),
+        CLAUDE_GROK_PLUGIN / "LICENSE": license_bytes,
         ROOT / "adapters" / "alice" / "publication.json": json_bytes(
             alice_publication(config)
         ),
         ROOT / "adapters" / "alice" / "runtime.json": json_bytes(
             alice_runtime(config)
         ),
+        ROOT / "adapters" / "alice" / "LICENSE": license_bytes,
     }
     for source_root_name in ("assets", "skills"):
         source_root = CODEX_PLUGIN / source_root_name

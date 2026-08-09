@@ -40,6 +40,7 @@ class PluginPackageTests(unittest.TestCase):
         self.assertEqual(manifest["name"], config["name"])
         self.assertEqual(manifest["version"], config["version"])
         self.assertEqual(manifest["description"], config["description"])
+        self.assertEqual(manifest["license"], config["license"])
 
     def test_repository_contains_exactly_one_plugin(self):
         plugin_names = sorted(path.name for path in (ROOT / "plugins").iterdir() if path.is_dir())
@@ -168,8 +169,8 @@ class McpBridgeTests(unittest.TestCase):
     def test_bridge_targets_production(self):
         self.assertEqual(self.proxy.BASE_URL, "https://botnest.app")
         self.assertEqual(self.proxy.MCP_URL, "https://botnest.app/mcp")
-        self.assertEqual(self.proxy.PLUGIN_VERSION, "1.1.0")
-        self.assertEqual(self.proxy.USER_AGENT, "BotNest-Plugin/1.1.0")
+        self.assertEqual(self.proxy.PLUGIN_VERSION, "1.1.1")
+        self.assertEqual(self.proxy.USER_AGENT, "BotNest-Plugin/1.1.1")
 
     def test_mcp_manifest_uses_the_production_bridge(self):
         config = load_json(PLUGIN / ".mcp.json")

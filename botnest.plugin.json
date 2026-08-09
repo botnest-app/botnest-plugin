@@ -1,6 +1,6 @@
 {
   "name": "botnest",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Create, improve, diagnose, brand, and publish production-ready Telegram bots with botnest.",
   "author": {
     "name": "botnest",
@@ -9,6 +9,12 @@
   },
   "homepage": "https://botnest.app/",
   "repository": "https://github.com/botnest-app/botnest-plugin",
+  "license": "Apache-2.0",
+  "legal": {
+    "privacy_policy_url": "https://botnest.app/legal/privacy/",
+    "terms_of_service_url": "https://botnest.app/legal/offer/",
+    "support_url": "https://github.com/botnest-app/botnest-plugin/issues"
+  },
   "keywords": [
     "telegram",
     "bots",
@@ -48,8 +54,6 @@
         "Write"
       ],
       "websiteURL": "https://botnest.app/",
-      "privacyPolicyURL": "https://botnest.app/legal/privacy/",
-      "termsOfServiceURL": "https://botnest.app/legal/offer/",
       "defaultPrompt": [
         "Создай Telegram-бота для записи клиентов",
         "Сделай бота поддержки по моему описанию",
@@ -64,7 +68,9 @@
   "claude": {
     "marketplace_name": "botnest",
     "marketplace_description": "Official botnest integrations for creating and managing Telegram bots.",
-    "category": "productivity"
+    "category": "productivity",
+    "display_name": "BotNest — Telegram Bot Builder",
+    "submission_file": "CLAUDE_SUBMISSION.md"
   },
   "grok": {
     "distribution": "claude-compatible",
