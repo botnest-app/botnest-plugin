@@ -2,7 +2,12 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
+import socket
+import subprocess
+import time
 import unittest
+import urllib.request
 from pathlib import Path
 
 
@@ -255,6 +260,62 @@ class AliceAdapterTests(unittest.TestCase):
         response = self.alice._reply("x" * 2000)
         self.assertEqual(len(response["response"]["text"]), 1024)
         self.assertEqual(response["version"], "1.0")
+
+
+class AliceHttpServerTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        with socket.socket() as sock:
+            sock.bind(("127.0.0.1", 0))
+            cls.port = sock.getsockname()[1]
+        env = os.environ.copy()
+        env.update({"HOST": "127.0.0.1", "PORT": str(cls.port)})
+        cls.process = subprocess.Popen(
+            ["python3", "server.py"],
+            cwd=ROOT / "adapters" / "alice",
+            env=env,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        for _ in range(50):
+            try:
+                with urllib.request.urlopen(
+                    f"http://127.0.0.1:{cls.port}/healthz", timeout=0.2
+                ) as response:
+                    if response.status == 200:
+                        return
+            except OSError:
+                time.sleep(0.05)
+        cls.process.terminate()
+        raise RuntimeError("Alice test server did not start")
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.process.terminate()
+        cls.process.wait(timeout=5)
+
+    def test_webhook_returns_a_valid_alice_greeting(self):
+        payload = {
+            "meta": {"interfaces": {"screen": {}, "account_linking": {}}},
+            "request": {"command": "", "original_utterance": ""},
+            "session": {
+                "new": True,
+                "session_id": "http-test",
+                "message_id": 0,
+                "user": {"user_id": "test-user"},
+            },
+            "version": "1.0",
+        }
+        request = urllib.request.Request(
+            f"http://127.0.0.1:{self.port}/alice/webhook/",
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(request, timeout=2) as response:
+            body = json.load(response)
+        self.assertEqual(body["version"], "1.0")
+        self.assertIn("Telegram-ботами", body["response"]["text"])
 
 
 if __name__ == "__main__":

@@ -12,8 +12,13 @@ stays in the agent hosts because Alice's webhook has a strict response budget.
 ## Deploy
 
 1. Run `python3 scripts/generate_platforms.py` from the repository root.
-2. Deploy `handler.py`, `runtime.json`, and its standard-library Python runtime
-   behind the HTTPS URL in `publication.json`.
+2. Deploy the adapter behind the HTTPS URL in `publication.json`. The included
+   `Dockerfile`, `server.py`, and `docker-compose.yml` run the webhook as a
+   hardened, dependency-free container on the shared `botnest-net` network:
+
+   ```bash
+   docker compose -p botnest-alice -f adapters/alice/docker-compose.yml up -d --build
+   ```
 3. Configure the Yandex Dialog with the values from `publication.json`.
 4. Deploy the BotNest backend's dedicated confidential Alice OAuth endpoints,
    configure `BOTNEST_ALICE_OAUTH_CLIENT_ID` and
@@ -21,6 +26,10 @@ stays in the agent hosts because Alice's webhook has a strict response budget.
    Dialogs. Do not reuse the public MCP clients or the Codex device client.
 5. Test account linking, the 4.5-second response budget, confirmation flows,
    and every example utterance before catalog submission.
+
+The container exposes `/healthz` internally. The public reverse proxy should
+route only `/alice/webhook/` to `botnest-alice:8080`; it should not expose the
+container port directly.
 
 The target Alice OAuth endpoints in `publication.json` are a backend contract.
 They must exist in production before the public skill is submitted. Client
