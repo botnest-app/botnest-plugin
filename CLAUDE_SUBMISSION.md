@@ -12,7 +12,7 @@ public community Plugin Directory through Claude Console.
 - License: Apache-2.0
 
 If the form requests an archive instead of the marketplace repository, build
-and upload `dist/botnest-claude-grok-1.1.1.zip`.
+and upload `dist/botnest-claude-grok-1.1.2.zip`.
 
 ## Listing
 
