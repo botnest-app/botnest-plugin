@@ -7,12 +7,12 @@ public community Plugin Directory through Claude Console.
 
 - Public repository: <https://github.com/botnest-app/botnest-plugin>
 - Marketplace manifest: `.claude-plugin/marketplace.json`
-- Plugin directory: `platforms/claude-grok/botnest`
+- Plugin directory: `platforms/claude/botnest`
 - Remote MCP: <https://botnest.app/mcp>
 - License: Apache-2.0
 
 If the form requests an archive instead of the marketplace repository, build
-and upload `dist/botnest-claude-grok-1.1.2.zip`.
+and upload `dist/botnest-claude-1.1.5.zip`.
 
 ## Listing
 
@@ -103,7 +103,7 @@ explicit confirmation if the request is ambiguous, and only then call
 
 ```bash
 python3 scripts/generate_platforms.py --check
-claude plugin validate platforms/claude-grok/botnest --strict
+claude plugin validate platforms/claude/botnest --strict
 python3 -m unittest discover -s tests -v
 python3 scripts/build_package.py
 python3 scripts/check_production.py

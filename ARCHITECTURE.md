@@ -5,7 +5,7 @@
 Keep every client integration in this repository and keep the BotNest backend
 in its existing service repository.
 
-Splitting ChatGPT, Codex, Claude, and Grok into separate repositories
+Splitting ChatGPT, Codex, Claude, and Perplexity into separate repositories
 would duplicate manifests, release versions, brand assets, safety rules, and
 the agent workflow. Moving the backend into this repository would couple
 distribution packages to secrets, database migrations, and service deployment.
@@ -18,12 +18,12 @@ botnest.plugin.json + shared skill/assets
                     |
           generate_platforms.py
                     |
-   +----------------+--------------------+
-   |                |                    |
-ChatGPT          Codex             Claude + Grok
-remote MCP       local bridge      remote MCP package
-   |                |                    |
-   +----------------+--------------------+
+   +----------------+----------------+----------------+
+   |                |                |                |
+ChatGPT          Codex           Claude          Perplexity
+remote MCP       local bridge    remote package  connector + skill
+   |                |                |                |
+   +----------------+----------------+----------------+
                     |
           https://botnest.app/mcp
                     |
@@ -49,12 +49,18 @@ do not use that schema.
 Codex installs `plugins/botnest`. Its local stdio proxy implements callback-free
 device authorization and forwards the shared tool contract to production.
 
-### Claude and Grok
+### Claude
 
-Claude installs `platforms/claude-grok/botnest`, which contains the generated
-copy of the shared skill/assets and a remote HTTP MCP definition. Grok consumes
-the same package through Claude Code compatibility; a separate Grok fork would
-have no platform-specific behavior today.
+Claude installs `platforms/claude/botnest`, which contains the generated copy
+of the shared skill/assets and a remote HTTP MCP definition.
+
+### Perplexity
+
+Perplexity uses `platforms/perplexity/botnest/connector.json` as the canonical
+field set for a custom remote connector and uploads the same shared skill as a
+separate archive. The platform does not define an installable repository
+manifest for custom connectors, so the generated README is the user-facing
+installation adapter. A public catalogue listing is a separate partner path.
 
 ## Ownership and generation rules
 
@@ -62,7 +68,8 @@ have no platform-specific behavior today.
   `botnest.plugin.json`.
 - Edit agent behavior only in
   `plugins/botnest/skills/create-telegram-bot/SKILL.md`.
-- Do not manually edit files under `platforms/claude-grok/botnest`, generated
+- Do not manually edit files under `platforms/claude/botnest` or
+  `platforms/perplexity/botnest`, generated
   manifests, or `runtime.json`.
 - Platform policy/review forms and executable adapters remain hand-maintained
   because they contain genuinely platform-specific logic.

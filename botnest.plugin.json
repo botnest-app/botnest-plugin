@@ -1,6 +1,6 @@
 {
   "name": "botnest",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "Create, improve, diagnose, brand, and publish production-ready Telegram bots with botnest.",
   "author": {
     "name": "botnest",
@@ -72,8 +72,16 @@
     "display_name": "BotNest — Telegram Bot Builder",
     "submission_file": "CLAUDE_SUBMISSION.md"
   },
-  "grok": {
-    "distribution": "claude-compatible",
-    "package": "platforms/claude-grok/botnest"
+  "perplexity": {
+    "distribution": "custom-remote-connector",
+    "connector_name": "BotNest — Telegram Bot Builder",
+    "description": "Create, inspect, improve, diagnose, brand, and publish Telegram bots with BotNest.",
+    "transport": "Streamable HTTP",
+    "authentication": "OAuth 2.0",
+    "oauth_redirect_urls": [
+      "https://www.perplexity.ai/rest/connections/oauth_callback",
+      "https://enterprise.perplexity.ai/rest/connections/oauth_callback"
+    ],
+    "submission_file": "PERPLEXITY_SUBMISSION.md"
   }
 }

@@ -19,7 +19,7 @@ Restart the ChatGPT desktop app, enable **botnest** in Plugins, and start a new
 conversation.
 
 This is one of several adapters generated from the same repository. ChatGPT
-uses the production remote MCP directly; Claude and Grok share a remote-MCP
-package; Alice uses a webhook. See the
+uses the production remote MCP directly, Claude uses its native remote-MCP
+package, and Perplexity uses a custom remote connector plus the shared skill. See the
 [public repository](https://github.com/botnest-app/botnest-plugin) for the
 cross-platform architecture, security notes, and release workflow.
