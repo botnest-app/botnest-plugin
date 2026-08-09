@@ -1,6 +1,6 @@
 {
   "name": "botnest",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Create, improve, diagnose, brand, and publish production-ready Telegram bots with botnest.",
   "author": {
     "name": "botnest",
@@ -9,6 +9,7 @@
   },
   "homepage": "https://botnest.app/",
   "repository": "https://github.com/botnest-app/botnest-plugin",
+  "license": "Apache-2.0",
   "keywords": [
     "telegram",
     "bots",
@@ -29,8 +30,6 @@
       "Write"
     ],
     "websiteURL": "https://botnest.app/",
-    "privacyPolicyURL": "https://botnest.app/legal/privacy/",
-    "termsOfServiceURL": "https://botnest.app/legal/offer/",
     "defaultPrompt": [
       "Создай Telegram-бота для записи клиентов",
       "Сделай бота поддержки по моему описанию",
@@ -39,6 +38,8 @@
     "brandColor": "#6557E8",
     "composerIcon": "./assets/icon.png",
     "logo": "./assets/logo.png",
-    "logoDark": "./assets/logo-dark.png"
+    "logoDark": "./assets/logo-dark.png",
+    "privacyPolicyURL": "https://botnest.app/legal/privacy/",
+    "termsOfServiceURL": "https://botnest.app/legal/offer/"
   }
 }

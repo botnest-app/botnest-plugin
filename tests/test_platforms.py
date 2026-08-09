@@ -53,6 +53,15 @@ class GeneratedPlatformTests(unittest.TestCase):
             version,
         )
 
+    def test_standalone_distributions_include_the_repository_license(self):
+        expected = (ROOT / "LICENSE").read_bytes()
+        for distribution in (
+            CODEX_PLUGIN,
+            CLAUDE_GROK_PLUGIN,
+            ROOT / "adapters" / "alice",
+        ):
+            self.assertEqual((distribution / "LICENSE").read_bytes(), expected)
+
     def test_chatgpt_uses_direct_remote_mcp_and_oauth(self):
         connector = load_json(ROOT / "platforms" / "chatgpt" / "connector.json")
         self.assertEqual(connector["distribution"], "remote-mcp")
@@ -83,6 +92,26 @@ class GeneratedPlatformTests(unittest.TestCase):
             (CODEX_PLUGIN / "skills" / "create-telegram-bot" / "SKILL.md").read_bytes(),
         )
         self.assertFalse((CLAUDE_GROK_PLUGIN / "scripts" / "botnest_mcp_proxy.py").exists())
+
+    def test_claude_package_is_ready_for_directory_submission(self):
+        manifest = load_json(
+            CLAUDE_GROK_PLUGIN / ".claude-plugin" / "plugin.json"
+        )
+        self.assertEqual(manifest["displayName"], "BotNest — Telegram Bot Builder")
+        self.assertEqual(manifest["license"], "Apache-2.0")
+        self.assertIn("botnest", manifest["keywords"])
+        self.assertEqual(
+            (CLAUDE_GROK_PLUGIN / "LICENSE").read_bytes(),
+            (ROOT / "LICENSE").read_bytes(),
+        )
+        setup = (CLAUDE_GROK_PLUGIN / "SETUP.md").read_text(encoding="utf-8")
+        self.assertIn("https://botnest.app/mcp", setup)
+        self.assertIn("Never ask the user to paste", setup)
+        readme = (CLAUDE_GROK_PLUGIN / "README.md").read_text(encoding="utf-8")
+        self.assertIn("https://botnest.app/legal/privacy/", readme)
+        self.assertIn("https://botnest.app/legal/offer/", readme)
+        self.assertIn("support", readme.lower())
+        self.assertTrue((ROOT / "CLAUDE_SUBMISSION.md").is_file())
 
     def test_alice_publication_declares_confidential_oauth_contract(self):
         publication = load_json(ROOT / "adapters" / "alice" / "publication.json")

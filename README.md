@@ -82,6 +82,11 @@ Restart the app, enable **botnest**, and start a new conversation.
 The generated package under `platforms/claude-grok/botnest` connects directly
 to the production MCP and lets Claude handle OAuth.
 
+For public-directory review, submit this repository through Claude Console and
+use the reviewer information in `CLAUDE_SUBMISSION.md`. The generated package
+is also available as `dist/botnest-claude-grok-<version>.zip` when an archive is
+requested.
+
 ### Grok
 
 Add this GitHub repository as a marketplace in Grok's extensions UI and install
@@ -132,3 +137,8 @@ users to paste Telegram bot tokens or LLM API keys into a conversation.
 - Terms: <https://botnest.app/legal/offer/>
 - Support: <https://github.com/botnest-app/botnest-plugin/issues>
 - Vulnerability reporting: [SECURITY.md](SECURITY.md)
+
+## License
+
+The plugin distributions and their source in this repository are licensed
+under the [Apache License 2.0](LICENSE).

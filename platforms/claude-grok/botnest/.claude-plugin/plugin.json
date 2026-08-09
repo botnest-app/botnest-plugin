@@ -1,6 +1,7 @@
 {
   "name": "botnest",
-  "version": "1.1.0",
+  "displayName": "BotNest — Telegram Bot Builder",
+  "version": "1.1.1",
   "description": "Create, improve, diagnose, brand, and publish production-ready Telegram bots with botnest.",
   "author": {
     "name": "botnest",
@@ -8,5 +9,13 @@
     "url": "https://botnest.app/"
   },
   "homepage": "https://botnest.app/",
-  "repository": "https://github.com/botnest-app/botnest-plugin"
+  "repository": "https://github.com/botnest-app/botnest-plugin",
+  "license": "Apache-2.0",
+  "keywords": [
+    "telegram",
+    "bots",
+    "automation",
+    "no-code",
+    "botnest"
+  ]
 }
