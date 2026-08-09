@@ -20,7 +20,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Compile Python adapters
-        run: python -m compileall -q plugins/botnest/scripts adapters/alice scripts
+        run: python -m compileall -q plugins/botnest/scripts scripts
       - name: Check generated platform packages
         run: python scripts/generate_platforms.py --check
       - name: Validate package and behavior
