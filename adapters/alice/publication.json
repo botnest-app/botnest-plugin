@@ -17,5 +17,5 @@
   "required_interfaces": [
     "account_linking"
   ],
-  "icon": "../../plugins/botnest/assets/logo.png"
+  "icon": "assets/store-icon.png"
 }

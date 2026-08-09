@@ -4,6 +4,7 @@ import importlib.util
 import json
 import os
 import socket
+import struct
 import subprocess
 import time
 import unittest
@@ -18,6 +19,13 @@ CLAUDE_GROK_PLUGIN = ROOT / "platforms" / "claude-grok" / "botnest"
 
 def load_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def png_size(path: Path) -> tuple[int, int]:
+    data = path.read_bytes()
+    if data[:8] != b"\x89PNG\r\n\x1a\n" or data[12:16] != b"IHDR":
+        raise AssertionError(f"{path} is not a valid PNG")
+    return struct.unpack(">II", data[16:24])
 
 
 def load_module(name: str, path: Path):
@@ -124,6 +132,13 @@ class GeneratedPlatformTests(unittest.TestCase):
         self.assertEqual(oauth["redirect_uri"], "https://social.yandex.net/broker/redirect")
         self.assertIn("/oauth/alice/", oauth["authorization_url"])
         self.assertNotIn("client_secret", json.dumps(publication).lower())
+
+    def test_alice_store_icon_matches_yandex_dimensions(self):
+        publication = load_json(ROOT / "adapters" / "alice" / "publication.json")
+        icon = ROOT / "adapters" / "alice" / publication["icon"]
+        self.assertTrue(icon.is_file())
+        self.assertEqual(png_size(icon), (1024, 500))
+        self.assertLessEqual(icon.stat().st_size, 5 * 1024 * 1024)
 
 
 class FakeMcpClient:

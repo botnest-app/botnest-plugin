@@ -1,6 +1,6 @@
 {
   "name": "botnest",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "description": "Create, improve, diagnose, brand, and publish production-ready Telegram bots with botnest.",
   "author": {
     "name": "botnest",
@@ -78,6 +78,7 @@
   },
   "alice": {
     "name": "botnest — конструктор Telegram-ботов",
+    "store_icon": "assets/store-icon.png",
     "activation_names": [
       "ботнест",
       "бот нест"

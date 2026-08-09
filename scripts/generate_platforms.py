@@ -163,7 +163,7 @@ def alice_publication(config: dict[str, Any]) -> dict[str, Any]:
         "webhook_url": alice["webhook_url"],
         "account_linking": alice["oauth"],
         "required_interfaces": ["account_linking"],
-        "icon": "../../plugins/botnest/assets/logo.png",
+        "icon": alice["store_icon"],
     }
 
 
