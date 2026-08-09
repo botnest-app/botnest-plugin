@@ -8,7 +8,7 @@
 <h1 align="center">botnest integrations</h1>
 
 <p align="center">
-  One product source for ChatGPT, Codex, Claude, Grok, and Yandex Alice.
+  One product source for ChatGPT, Codex, Claude, and Grok.
 </p>
 
 This repository is the distribution monorepo for **botnest**. Product metadata,
@@ -27,7 +27,6 @@ owns user data, OAuth grants, Telegram credentials, and the production MCP at
 | Codex | OpenAI plugin marketplace package | Local stdio bridge + Telegram device authorization |
 | Claude | Claude plugin marketplace package | Direct remote MCP + native OAuth |
 | Grok | The same Claude-compatible package | Direct remote MCP + native OAuth |
-| Yandex Alice | Public Alice catalog skill | HTTPS webhook + Alice account linking |
 
 OpenAI intentionally has two adapters. ChatGPT uses the remote MCP/OAuth path,
 while the installable Codex plugin keeps the local bridge path. They share the
@@ -41,14 +40,13 @@ same BotNest tools and workflow rather than maintaining separate product logic.
   workflow used by ChatGPT, Codex, Claude, and Grok.
 - `plugins/botnest/assets/` contains the shared brand assets.
 - `plugins/botnest/scripts/botnest_mcp_proxy.py` is Codex-specific transport.
-- `adapters/alice/handler.py` is Alice-specific conversation and webhook logic.
 - `chatgpt-app-submission.json` contains OpenAI-specific review cases and tool
   policy justifications.
 
 `scripts/generate_platforms.py` renders the Codex manifest and marketplace, the
 ChatGPT remote-connector descriptor, the Claude/Grok package and marketplace,
-the runtime configuration, and the Alice publication settings. Generated drift
-is a CI error, so generated platform copies cannot silently diverge.
+and the runtime configuration. Generated drift is a CI error, so generated
+platform copies cannot silently diverge.
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for boundaries and release rules.
 
@@ -93,14 +91,6 @@ Add this GitHub repository as a marketplace in Grok's extensions UI and install
 **botnest**. Grok reads the Claude marketplace, plugin, skill, and MCP format,
 so no Grok-specific copy is maintained.
 
-### Yandex Alice
-
-Deploy `adapters/alice/handler.py` as the HTTPS webhook and configure the Dialog
-from `adapters/alice/publication.json`. Before catalog submission, the BotNest
-backend must expose the confidential Alice OAuth endpoints described in the
-adapter README. The existing public MCP PKCE client and Codex device client are
-not interchangeable with Alice account linking.
-
 ## Change once, release everywhere
 
 1. Edit `botnest.plugin.json`, the shared skill/assets, or a genuinely
@@ -114,24 +104,20 @@ python3 scripts/generate_platforms.py --check
 python3 -m unittest discover -s tests -v
 python3 scripts/build_package.py
 python3 scripts/check_production.py
-# After the Alice OAuth backend is deployed:
-python3 scripts/check_production.py --include-alice
 ```
 
 The package command creates:
 
 - `dist/botnest-codex-<version>.zip`
 - `dist/botnest-claude-grok-<version>.zip`
-- `dist/botnest-alice-<version>.zip`
 - `dist/create-telegram-bot-skill.zip`
 
 ## Security and privacy
 
 The Codex bridge stores OAuth credentials inside the plugin's private data
 directory with restrictive permissions. Remote-MCP platforms keep OAuth in
-their native connector flow. The Alice adapter receives a short-lived BotNest
-access token through Yandex account linking and never stores it. No adapter asks
-users to paste Telegram bot tokens or LLM API keys into a conversation.
+their native connector flow. No adapter asks users to paste Telegram bot tokens
+or LLM API keys into a conversation.
 
 - Privacy: <https://botnest.app/legal/privacy/>
 - Terms: <https://botnest.app/legal/offer/>

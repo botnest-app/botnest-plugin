@@ -75,22 +75,5 @@
   "grok": {
     "distribution": "claude-compatible",
     "package": "platforms/claude-grok/botnest"
-  },
-  "alice": {
-    "name": "botnest — конструктор Telegram-ботов",
-    "store_icon": "assets/store-icon.png",
-    "activation_names": [
-      "ботнест",
-      "бот нест"
-    ],
-    "description": "Создавайте и управляйте Telegram-ботами голосом через botnest.",
-    "webhook_url": "https://botnest.app/alice/webhook/",
-    "oauth": {
-      "authorization_url": "https://botnest.app/oauth/alice/authorize",
-      "token_url": "https://botnest.app/oauth/alice/token",
-      "refresh_url": "https://botnest.app/oauth/alice/token",
-      "redirect_uri": "https://social.yandex.net/broker/redirect",
-      "scope": "bots:read&bots:create&bots:publish"
-    }
   }
 }

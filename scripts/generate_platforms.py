@@ -153,29 +153,6 @@ def chatgpt_connector(config: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def alice_publication(config: dict[str, Any]) -> dict[str, Any]:
-    alice = config["alice"]
-    return {
-        "name": alice["name"],
-        "activation_names": alice["activation_names"],
-        "description": alice["description"],
-        "access": "public",
-        "webhook_url": alice["webhook_url"],
-        "account_linking": alice["oauth"],
-        "required_interfaces": ["account_linking"],
-        "icon": alice["store_icon"],
-    }
-
-
-def alice_runtime(config: dict[str, Any]) -> dict[str, Any]:
-    return {
-        "version": config["version"],
-        "base_url": config["service"]["base_url"],
-        "mcp_url": config["service"]["mcp_url"],
-        "request_timeout_seconds": 3.0,
-    }
-
-
 def claude_readme(config: dict[str, Any]) -> bytes:
     legal = config["legal"]
     text = f"""# BotNest for Claude and Grok
@@ -287,13 +264,6 @@ def generated_files(config: dict[str, Any]) -> dict[Path, bytes]:
         CLAUDE_GROK_PLUGIN / "README.md": claude_readme(config),
         CLAUDE_GROK_PLUGIN / "SETUP.md": claude_setup(config),
         CLAUDE_GROK_PLUGIN / "LICENSE": license_bytes,
-        ROOT / "adapters" / "alice" / "publication.json": json_bytes(
-            alice_publication(config)
-        ),
-        ROOT / "adapters" / "alice" / "runtime.json": json_bytes(
-            alice_runtime(config)
-        ),
-        ROOT / "adapters" / "alice" / "LICENSE": license_bytes,
     }
     for source_root_name in ("assets", "skills"):
         source_root = CODEX_PLUGIN / source_root_name
