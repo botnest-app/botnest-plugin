@@ -13,7 +13,8 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG_PATH = ROOT / "botnest.plugin.json"
 CODEX_PLUGIN = ROOT / "plugins" / "botnest"
-CLAUDE_GROK_PLUGIN = ROOT / "platforms" / "claude-grok" / "botnest"
+CLAUDE_PLUGIN = ROOT / "platforms" / "claude" / "botnest"
+PERPLEXITY_PLUGIN = ROOT / "platforms" / "perplexity" / "botnest"
 
 
 def load_config() -> dict[str, Any]:
@@ -119,7 +120,7 @@ def claude_marketplace(config: dict[str, Any]) -> dict[str, Any]:
             {
                 "name": config["name"],
                 "description": config["description"],
-                "source": "./platforms/claude-grok/botnest",
+                "source": "./platforms/claude/botnest",
                 "category": config["claude"]["category"],
             }
         ],
@@ -153,9 +154,36 @@ def chatgpt_connector(config: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def perplexity_connector(config: dict[str, Any]) -> dict[str, Any]:
+    base_url = config["service"]["base_url"]
+    platform = config["perplexity"]
+    return {
+        "platform": "perplexity",
+        "distribution": platform["distribution"],
+        "name": platform["connector_name"],
+        "description": platform["description"],
+        "mcp_server_url": config["service"]["mcp_url"],
+        "transport": platform["transport"],
+        "authentication": {
+            "type": platform["authentication"],
+            "dynamic_client_registration": True,
+            "protected_resource_metadata": (
+                f"{base_url}/.well-known/oauth-protected-resource/mcp"
+            ),
+            "authorization_server_metadata": (
+                f"{base_url}/.well-known/oauth-authorization-server"
+            ),
+            "redirect_urls": platform["oauth_redirect_urls"],
+        },
+        "icon": "icon.png",
+        "skill_archive": f"botnest-perplexity-skill-{config['version']}.zip",
+        "submission_file": platform["submission_file"],
+    }
+
+
 def claude_readme(config: dict[str, Any]) -> bytes:
     legal = config["legal"]
-    text = f"""# BotNest for Claude and Grok
+    text = f"""# BotNest for Claude
 
 Create, inspect, improve, diagnose, brand, and publish Telegram bots from a
 plain-language request. This package bundles the BotNest workflow skill with a
@@ -205,8 +233,69 @@ no local hooks, background processes, telemetry, or bundled executable code.
   sharing tokens, credentials, or private bot data.
 
 This package is generated from the shared BotNest source. Do not edit generated
-files under `platforms/claude-grok/botnest` directly. Grok Build uses the same
-package through its Claude Code compatibility layer.
+files under `platforms/claude/botnest` directly.
+
+Licensed under the Apache License 2.0. See `LICENSE`.
+"""
+    return text.encode("utf-8")
+
+
+def perplexity_readme(config: dict[str, Any]) -> bytes:
+    platform = config["perplexity"]
+    callback_urls = "\n".join(
+        f"- `{url}`" for url in platform["oauth_redirect_urls"]
+    )
+    text = f"""# BotNest for Perplexity
+
+BotNest connects to Perplexity as a custom remote MCP connector. Perplexity
+uses its native OAuth flow to authenticate each BotNest user, while the shared
+BotNest skill teaches Perplexity Computer the same safe Telegram-bot workflow
+used by ChatGPT and Claude.
+
+## Add the connector
+
+1. Open **Account settings → Connectors** in Perplexity.
+2. Select **+ Custom connector**, then choose **Remote**.
+3. Enter the following values:
+   - Name: `{platform['connector_name']}`
+   - MCP Server URL: `{config['service']['mcp_url']}`
+   - Description: `{platform['description']}`
+   - Authentication: `{platform['authentication']}`
+   - Transport: `{platform['transport']}`
+   - Icon: `icon.png`
+4. Accept Perplexity's custom-connector risk acknowledgement and add the
+   connector.
+5. Open the BotNest connector card and complete the BotNest OAuth flow.
+
+BotNest supports OAuth discovery and dynamic client registration, so no static
+client ID or client secret is required. The supported Perplexity callbacks are:
+
+{callback_urls}
+
+## Add the skill in Perplexity Computer
+
+1. Build or download `botnest-perplexity-skill-{config['version']}.zip`.
+2. Open **Customize → Skills → + Create skill → Upload a skill**.
+3. Upload the archive and enable **create-telegram-bot** under My skills.
+4. Keep the BotNest connector enabled in **Customize → Connectors**.
+
+The connector is the actual MCP connection. The skill improves tool selection
+and safety but does not connect to BotNest by itself.
+
+## Availability
+
+Perplexity currently documents this as a custom remote connector rather than a
+public self-service marketplace submission. Organization members may need an
+administrator to enable custom connectors. A built-in catalogue tile requires
+separate coordination with Perplexity.
+
+Never paste Telegram bot tokens, OAuth codes, passwords, client secrets, or LLM
+API keys into a Perplexity conversation.
+
+- Privacy policy: {config['legal']['privacy_policy_url']}
+- Terms of service: {config['legal']['terms_of_service_url']}
+- Support: {config['legal']['support_url']}
+- Source: {config['repository']}
 
 Licensed under the Apache License 2.0. See `LICENSE`.
 """
@@ -257,20 +346,30 @@ def generated_files(config: dict[str, Any]) -> dict[Path, bytes]:
         ROOT / ".claude-plugin" / "marketplace.json": json_bytes(
             claude_marketplace(config)
         ),
-        CLAUDE_GROK_PLUGIN / ".claude-plugin" / "plugin.json": json_bytes(
+        CLAUDE_PLUGIN / ".claude-plugin" / "plugin.json": json_bytes(
             claude_manifest(config)
         ),
-        CLAUDE_GROK_PLUGIN / ".mcp.json": json_bytes(remote_mcp(config)),
-        CLAUDE_GROK_PLUGIN / "README.md": claude_readme(config),
-        CLAUDE_GROK_PLUGIN / "SETUP.md": claude_setup(config),
-        CLAUDE_GROK_PLUGIN / "LICENSE": license_bytes,
+        CLAUDE_PLUGIN / ".mcp.json": json_bytes(remote_mcp(config)),
+        CLAUDE_PLUGIN / "README.md": claude_readme(config),
+        CLAUDE_PLUGIN / "SETUP.md": claude_setup(config),
+        CLAUDE_PLUGIN / "LICENSE": license_bytes,
+        PERPLEXITY_PLUGIN / "connector.json": json_bytes(
+            perplexity_connector(config)
+        ),
+        PERPLEXITY_PLUGIN / "README.md": perplexity_readme(config),
+        PERPLEXITY_PLUGIN / "LICENSE": license_bytes,
+        PERPLEXITY_PLUGIN / "icon.png": (
+            CODEX_PLUGIN / "assets" / "logo.png"
+        ).read_bytes(),
     }
     for source_root_name in ("assets", "skills"):
         source_root = CODEX_PLUGIN / source_root_name
         for source in sorted(source_root.rglob("*")):
             if source.is_file() and "__pycache__" not in source.parts:
-                target = CLAUDE_GROK_PLUGIN / source.relative_to(CODEX_PLUGIN)
-                result[target] = source.read_bytes()
+                relative = source.relative_to(CODEX_PLUGIN)
+                result[CLAUDE_PLUGIN / relative] = source.read_bytes()
+                if source_root_name == "skills":
+                    result[PERPLEXITY_PLUGIN / relative] = source.read_bytes()
     return result
 
 

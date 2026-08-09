@@ -1,4 +1,4 @@
-# BotNest for Claude and Grok
+# BotNest for Claude
 
 Create, inspect, improve, diagnose, brand, and publish Telegram bots from a
 plain-language request. This package bundles the BotNest workflow skill with a
@@ -48,7 +48,6 @@ no local hooks, background processes, telemetry, or bundled executable code.
   sharing tokens, credentials, or private bot data.
 
 This package is generated from the shared BotNest source. Do not edit generated
-files under `platforms/claude-grok/botnest` directly. Grok Build uses the same
-package through its Claude Code compatibility layer.
+files under `platforms/claude/botnest` directly.
 
 Licensed under the Apache License 2.0. See `LICENSE`.

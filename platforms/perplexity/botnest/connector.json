@@ -1,0 +1,21 @@
+{
+  "platform": "perplexity",
+  "distribution": "custom-remote-connector",
+  "name": "BotNest — Telegram Bot Builder",
+  "description": "Create, inspect, improve, diagnose, brand, and publish Telegram bots with BotNest.",
+  "mcp_server_url": "https://botnest.app/mcp",
+  "transport": "Streamable HTTP",
+  "authentication": {
+    "type": "OAuth 2.0",
+    "dynamic_client_registration": true,
+    "protected_resource_metadata": "https://botnest.app/.well-known/oauth-protected-resource/mcp",
+    "authorization_server_metadata": "https://botnest.app/.well-known/oauth-authorization-server",
+    "redirect_urls": [
+      "https://www.perplexity.ai/rest/connections/oauth_callback",
+      "https://enterprise.perplexity.ai/rest/connections/oauth_callback"
+    ]
+  },
+  "icon": "icon.png",
+  "skill_archive": "botnest-perplexity-skill-1.1.5.zip",
+  "submission_file": "PERPLEXITY_SUBMISSION.md"
+}

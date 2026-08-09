@@ -110,6 +110,24 @@ class PluginPackageTests(unittest.TestCase):
             for value in forbidden:
                 self.assertNotIn(value, text, f"{value!r} found in {path}")
 
+    def test_retired_platforms_are_absent_from_current_sources(self):
+        ignored_parts = {".git", "dist", "__pycache__"}
+        retired_names = ("al" + "ice", "gr" + "ok")
+        for path in ROOT.rglob("*"):
+            if (
+                not path.is_file()
+                or any(part in ignored_parts for part in path.parts)
+                or path.suffix.lower() in {".png", ".jpg", ".jpeg", ".webp", ".pyc"}
+            ):
+                continue
+            text = path.read_text(encoding="utf-8").lower()
+            for retired_name in retired_names:
+                self.assertNotIn(
+                    retired_name,
+                    text,
+                    f"retired platform reference found in {path}",
+                )
+
     def test_skill_frontmatter_and_core_safety_rules(self):
         skill = (PLUGIN / "skills" / "create-telegram-bot" / "SKILL.md").read_text(
             encoding="utf-8"

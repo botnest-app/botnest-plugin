@@ -8,7 +8,7 @@
 <h1 align="center">botnest integrations</h1>
 
 <p align="center">
-  One product source for ChatGPT, Codex, Claude, and Grok.
+  One product source for ChatGPT and Codex, Claude, and Perplexity.
 </p>
 
 This repository is the distribution monorepo for **botnest**. Product metadata,
@@ -26,7 +26,7 @@ owns user data, OAuth grants, Telegram credentials, and the production MCP at
 | ChatGPT | ChatGPT app directory submission | Direct remote MCP + native OAuth; works on mobile |
 | Codex | OpenAI plugin marketplace package | Local stdio bridge + Telegram device authorization |
 | Claude | Claude plugin marketplace package | Direct remote MCP + native OAuth |
-| Grok | The same Claude-compatible package | Direct remote MCP + native OAuth |
+| Perplexity | Custom remote connector + uploaded skill | Direct remote MCP + native OAuth |
 
 OpenAI intentionally has two adapters. ChatGPT uses the remote MCP/OAuth path,
 while the installable Codex plugin keeps the local bridge path. They share the
@@ -37,16 +37,16 @@ same BotNest tools and workflow rather than maintaining separate product logic.
 - `botnest.plugin.json` is the canonical version, listing, service URL, and
   platform configuration.
 - `plugins/botnest/skills/create-telegram-bot/SKILL.md` is the shared agent
-  workflow used by ChatGPT, Codex, Claude, and Grok.
+  workflow used by ChatGPT, Codex, Claude, and Perplexity.
 - `plugins/botnest/assets/` contains the shared brand assets.
 - `plugins/botnest/scripts/botnest_mcp_proxy.py` is Codex-specific transport.
 - `chatgpt-app-submission.json` contains OpenAI-specific review cases and tool
   policy justifications.
 
 `scripts/generate_platforms.py` renders the Codex manifest and marketplace, the
-ChatGPT remote-connector descriptor, the Claude/Grok package and marketplace,
-and the runtime configuration. Generated drift is a CI error, so generated
-platform copies cannot silently diverge.
+ChatGPT remote-connector descriptor, the Claude package and marketplace, the
+Perplexity connector bundle, and the runtime configuration. Generated drift is
+a CI error, so generated platform copies cannot silently diverge.
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for boundaries and release rules.
 
@@ -77,19 +77,26 @@ Restart the app, enable **botnest**, and start a new conversation.
 /plugin install botnest@botnest
 ```
 
-The generated package under `platforms/claude-grok/botnest` connects directly
+The generated package under `platforms/claude/botnest` connects directly
 to the production MCP and lets Claude handle OAuth.
 
 For public-directory review, submit this repository through Claude Console and
 use the reviewer information in `CLAUDE_SUBMISSION.md`. The generated package
-is also available as `dist/botnest-claude-grok-<version>.zip` when an archive is
+is also available as `dist/botnest-claude-<version>.zip` when an archive is
 requested.
 
-### Grok
+### Perplexity
 
-Add this GitHub repository as a marketplace in Grok's extensions UI and install
-**botnest**. Grok reads the Claude marketplace, plugin, skill, and MCP format,
-so no Grok-specific copy is maintained.
+Add BotNest from **Account settings → Connectors → + Custom connector → Remote**
+using `https://botnest.app/mcp`, OAuth, and Streamable HTTP. Then upload
+`dist/botnest-perplexity-skill-<version>.zip` under **Customize → Skills** in
+Perplexity Computer. Exact field values and current availability constraints
+are documented in `platforms/perplexity/botnest/README.md` and
+`PERPLEXITY_SUBMISSION.md`.
+
+Perplexity currently exposes this as a custom connector, not an open public
+marketplace submission. A built-in catalogue tile requires separate
+coordination with Perplexity.
 
 ## Change once, release everywhere
 
@@ -109,7 +116,9 @@ python3 scripts/check_production.py
 The package command creates:
 
 - `dist/botnest-codex-<version>.zip`
-- `dist/botnest-claude-grok-<version>.zip`
+- `dist/botnest-claude-<version>.zip`
+- `dist/botnest-perplexity-<version>.zip`
+- `dist/botnest-perplexity-skill-<version>.zip`
 - `dist/create-telegram-bot-skill.zip`
 
 ## Security and privacy

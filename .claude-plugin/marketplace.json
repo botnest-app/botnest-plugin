@@ -7,13 +7,13 @@
   },
   "metadata": {
     "description": "Official botnest integrations for creating and managing Telegram bots.",
-    "version": "1.1.4"
+    "version": "1.1.5"
   },
   "plugins": [
     {
       "name": "botnest",
       "description": "Create, improve, diagnose, brand, and publish production-ready Telegram bots with botnest.",
-      "source": "./platforms/claude-grok/botnest",
+      "source": "./platforms/claude/botnest",
       "category": "productivity"
     }
   ]

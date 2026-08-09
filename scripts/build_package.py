@@ -11,7 +11,8 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 ROOT = Path(__file__).resolve().parents[1]
 PLUGIN = ROOT / "plugins" / "botnest"
-CLAUDE_GROK_PLUGIN = ROOT / "platforms" / "claude-grok" / "botnest"
+CLAUDE_PLUGIN = ROOT / "platforms" / "claude" / "botnest"
+PERPLEXITY_PLUGIN = ROOT / "platforms" / "perplexity" / "botnest"
 SKILL = PLUGIN / "skills" / "create-telegram-bot"
 DIST = ROOT / "dist"
 
@@ -41,7 +42,9 @@ def main() -> None:
     )
     version = manifest["version"]
     codex_output = DIST / f"botnest-codex-{version}.zip"
-    claude_grok_output = DIST / f"botnest-claude-grok-{version}.zip"
+    claude_output = DIST / f"botnest-claude-{version}.zip"
+    perplexity_output = DIST / f"botnest-perplexity-{version}.zip"
+    perplexity_skill_output = DIST / f"botnest-perplexity-skill-{version}.zip"
     skill_output = DIST / "create-telegram-bot-skill.zip"
     DIST.mkdir(exist_ok=True)
 
@@ -50,19 +53,28 @@ def main() -> None:
         for path in PLUGIN.rglob("*")
         if path.is_file() and "__pycache__" not in path.parts and path.suffix != ".pyc"
     )
-    claude_grok_files = sorted(
+    claude_files = sorted(
         path
-        for path in CLAUDE_GROK_PLUGIN.rglob("*")
+        for path in CLAUDE_PLUGIN.rglob("*")
+        if path.is_file() and "__pycache__" not in path.parts and path.suffix != ".pyc"
+    )
+    perplexity_files = sorted(
+        path
+        for path in PERPLEXITY_PLUGIN.rglob("*")
         if path.is_file() and "__pycache__" not in path.parts and path.suffix != ".pyc"
     )
     skill_files = sorted(path for path in SKILL.rglob("*") if path.is_file())
     write_archive(codex_output, PLUGIN, codex_files)
-    write_archive(claude_grok_output, CLAUDE_GROK_PLUGIN, claude_grok_files)
+    write_archive(claude_output, CLAUDE_PLUGIN, claude_files)
+    write_archive(perplexity_output, PERPLEXITY_PLUGIN, perplexity_files)
     write_archive(skill_output, SKILL, skill_files)
+    write_archive(perplexity_skill_output, SKILL, skill_files)
 
     print(codex_output.relative_to(ROOT))
-    print(claude_grok_output.relative_to(ROOT))
+    print(claude_output.relative_to(ROOT))
+    print(perplexity_output.relative_to(ROOT))
     print(skill_output.relative_to(ROOT))
+    print(perplexity_skill_output.relative_to(ROOT))
 
 
 if __name__ == "__main__":
