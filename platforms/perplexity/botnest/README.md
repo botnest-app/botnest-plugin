@@ -28,7 +28,7 @@ client ID or client secret is required. The supported Perplexity callbacks are:
 
 ## Add the skill in Perplexity Computer
 
-1. Build or download `botnest-perplexity-skill-1.1.5.zip`.
+1. Build or download `botnest-perplexity-skill-1.1.6.zip`.
 2. Open **Customize → Skills → + Create skill → Upload a skill**.
 3. Upload the archive and enable **create-telegram-bot** under My skills.
 4. Keep the BotNest connector enabled in **Customize → Connectors**.
