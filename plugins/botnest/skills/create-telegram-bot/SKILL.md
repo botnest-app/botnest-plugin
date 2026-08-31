@@ -361,6 +361,31 @@ commands, menu button, language versions, or suggested administrator rights.
   action to imitate media relay and do not call an external Telegram API with
   a bot token.
 
+## Personal reminders and notifications
+
+- Distinguish a bot-wide recurring schedule from a date chosen by an individual
+  during a conversation. Use an `input` schedule only for the former; use the
+  catalog's `reminder` block for the latter.
+- Follow `recipes.personal_reminders` from the latest builder context. For a
+  new one-time notification, pass an ISO-8601 value to `remind_at`, an explicit
+  IANA `timezone`, the fully rendered future `text`, a permitted
+  `target_chat_id`, and a unique `output_field`. Never use `delay` for a wait
+  longer than its documented ten-second limit.
+- A date button may carry an ISO value in `callback.data`; a typed natural date
+  may be normalized with the available LLM/JSON and `datetime` blocks before
+  scheduling. Confirm success from `${<output_field>.success}` and show the
+  stored `${<output_field>.reminder.scheduled_for_local}` instead of claiming that a
+  reminder exists merely because the block is present.
+- Use reminder actions `list`, `cancel`, and `cancel_all` when the user needs to
+  manage future notifications. Cancellation is scoped by the runtime to the
+  current Telegram user; pass the UUID returned in `reminder.id` to `cancel`.
+- In a group, `${callback.from_user_id}` may target the person privately only
+  after that person has started the bot in a direct chat. Explain this Telegram
+  delivery rule when the requested design depends on private notifications.
+- Preserve the reminder block's idempotency behavior. For a custom
+  `idempotency_key`, include the current user and event; otherwise Telegram
+  callbacks are deduplicated by their callback id automatically.
+
 ## Integrity rule
 
 Never silently apply a partial interpretation. Only after checking the live
