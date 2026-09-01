@@ -176,7 +176,7 @@ class PluginPackageTests(unittest.TestCase):
         submission = load_json(ROOT / "chatgpt-app-submission.json")
         self.assertEqual(
             submission["$schema"],
-            "https://developers.openai.com/plugins/schemas/chatgpt-app-submission.v1.json",
+            "https://developers.openai.com/apps-sdk/schemas/chatgpt-app-submission.v1.json",
         )
         self.assertEqual(len(submission["test_cases"]), 5)
         self.assertEqual(len(submission["negative_test_cases"]), 3)
