@@ -35,7 +35,7 @@ no local hooks, background processes, telemetry, or bundled executable code.
 
 - Privacy policy: https://botnest.app/legal/privacy/
 - Terms of service: https://botnest.app/legal/offer/
-- Support and issue reporting: https://github.com/botnest-app/botnest-plugin/issues
+- Support and issue reporting: https://botnest.app/support/
 - Source: https://github.com/botnest-app/botnest-plugin
 
 ## Troubleshooting

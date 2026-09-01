@@ -21,8 +21,8 @@
   "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "botnest",
-    "shortDescription": "Создавайте, настраивайте и оформляйте Telegram-ботов",
-    "longDescription": "Создавайте, изменяйте и публикуйте Telegram-ботов обычными словами. botnest проектирует и проверяет сценарии, включая персональные напоминания и уведомления, подключает LLM-провайдера, помогает диагностировать ошибки и настраивает имя, описание, команды и аватар.",
+    "shortDescription": "Create and customize Telegram bots",
+    "longDescription": "Create, edit, and publish Telegram bots from plain-language requests. botnest designs and validates flows, including personal reminders and notifications, connects LLM providers, diagnoses errors, and manages names, descriptions, commands, and avatars.",
     "developerName": "botnest",
     "category": "Productivity",
     "capabilities": [
@@ -31,9 +31,9 @@
     ],
     "websiteURL": "https://botnest.app/",
     "defaultPrompt": [
-      "Создай Telegram-бота для записи клиентов",
-      "Сделай бота с персональными напоминаниями о встречах",
-      "Измени поведение и оформление моего последнего бота"
+      "Create a Telegram bot for booking appointments",
+      "Create a bot with personal meeting reminders",
+      "Update the behavior and profile of my latest bot"
     ],
     "brandColor": "#6557E8",
     "composerIcon": "./assets/icon.png",

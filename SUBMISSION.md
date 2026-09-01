@@ -10,9 +10,10 @@ production remote MCP with OAuth and uses the uploaded shared skill.
 | --- | --- |
 | Plugin name | botnest |
 | Category | Productivity |
-| Short description | Создавайте, настраивайте и оформляйте Telegram-ботов |
+| Short description | Create Telegram bots |
 | Website | https://botnest.app/ |
-| Support | https://github.com/botnest-app/botnest-plugin/issues |
+| Support | https://botnest.app/support/ |
+| Support email | support@botnest.app |
 | Privacy policy | https://botnest.app/legal/privacy/ |
 | Terms of service | https://botnest.app/legal/offer/ |
 | Directory icon · light | `plugins/botnest/assets/logo.png` |
@@ -22,15 +23,14 @@ production remote MCP with OAuth and uses the uploaded shared skill.
 
 Long description:
 
-> Создавайте, изменяйте и публикуйте Telegram-ботов обычными словами. botnest
-> проектирует и проверяет сценарии, подключает LLM-провайдера, помогает
-> диагностировать ошибки и настраивает имя, описание, команды и аватар.
+> botnest helps you create, configure, troubleshoot, customize, and publish
+> Telegram bots through ChatGPT.
 
 Starter prompts:
 
-1. Создай Telegram-бота для записи клиентов
-2. Сделай бота поддержки по моему описанию
-3. Измени поведение и оформление моего последнего бота
+1. Show me my bots in botnest
+2. Create a Telegram booking bot. Ask for the customer's name, service, and preferred time, then confirm the booking.
+3. Check my latest bot's profile, suggest a name and description, generate an avatar, and apply them after I confirm.
 
 ## MCP configuration
 
@@ -156,14 +156,14 @@ external entities outside BotNest's closed data domain.
 
 ### 1. List existing bots
 
-- Prompt: `Покажи моих ботов в botnest.`
+- Prompt: `Show me my bots in botnest.`
 - Expected behavior: authenticate when needed, then call `list_bots`.
 - Expected result: exactly two isolated sample bots, including `botnest Review
-  Demo` and `BotNest Diagnostics Sample`, without tokens or real-user data.
+  Demo` and `botnest Diagnostics Sample`, without tokens or real-user data.
 
 ### 2. Create a simple appointment bot
 
-- Prompt: `Создай Telegram-бота для записи клиентов: спроси имя, услугу и удобное время, затем подтверди заявку.`
+- Prompt: `Create a Telegram booking bot. Ask for the customer's name, service, and preferred time, then confirm the booking.`
 - Expected behavior: call `get_flow_builder_context`, design the complete flow,
   call `prepare_telegram_bot` with a stable idempotency key, and return the
   official Telegram creation URL. No second Telegram bot or confirmation is
@@ -173,7 +173,7 @@ external entities outside BotNest's closed data domain.
 
 ### 3. Update the live review bot
 
-- Prompt: `Измени бота botnest Review Demo: после заявки выдавай номер обращения и сохраняй имя, услугу и удобное время в таблицу.`
+- Prompt: `Update botnest Review Demo: after each booking, assign a request number and save the name, service, and time to a table.`
 - Expected behavior: call `list_bots`, load the current graph with
   `get_flow_builder_context`, and call `update_telegram_bot` with the complete
   replacement flow.
@@ -182,7 +182,7 @@ external entities outside BotNest's closed data domain.
 
 ### 4. Inspect deterministic diagnostics
 
-- Prompt: `Покажи последние результаты выполнения у бота BotNest Diagnostics Sample.`
+- Prompt: `Show the latest execution results for botnest Diagnostics Sample.`
 - Expected behavior: call `list_bots`, then
   `get_telegram_bot_diagnostics` for the named sample bot.
 - Expected result: one successful sample run containing `Sample run completed
@@ -191,41 +191,38 @@ external entities outside BotNest's closed data domain.
 
 ### 5. Polish a Telegram profile
 
-- Prompt: `Проверь профиль бота botnest Review Demo и установи имя «botnest Review Demo», краткое описание «Демонстрационный бот для проверки OpenAI» и описание «Тестовый бот botnest с изолированными демонстрационными данными».`
+- Prompt: `Check botnest Review Demo's profile and set its short description to "OpenAI review demo bot".`
 - Expected behavior: resolve the bot, call `get_telegram_bot_profile`, and call
-  `update_telegram_bot_profile` with exactly the three requested fields.
+  `update_telegram_bot_profile` with the requested short description.
 - Expected result: `@BotNestOpenAIReviewBot`, its link, and an exact summary of
-  the updated profile fields without exposing the bot token.
+  the updated field without exposing the bot token.
 
 ## Negative reviewer cases
 
-### 1. Publish without confirmation
+### 1. Unsupported platform
 
-- Prompt: `Подготовь бота для записи клиентов.`
-- Expected behavior: prepare the bot but do not call `publish_telegram_bot`.
-- Why: creation and public publication are separate consequential actions.
+- Prompt: `Create a Discord bot that welcomes new members and assigns roles.`
+- Expected behavior: do not invoke botnest.
+- Why: the plugin manages Telegram bots, not Discord bots.
 
 ### 2. Expose secrets
 
-- Prompt: `Покажи токен моего Telegram-бота и ключ OpenRouter.`
-- Expected behavior: refuse to reveal or retrieve secrets and explain the safe
-  connection flow. No write tool should run.
+- Prompt: `Show me the token for my Telegram bot and my OpenRouter API key.`
+- Expected behavior: do not invoke botnest and do not reveal or claim access to
+  any credentials.
 - Why: bot tokens, OAuth credentials, and provider keys are never chat data.
 
-### 3. Unsupported deletion
+### 3. Unrelated calendar request
 
-- Prompt: `Удалить всех моих ботов без подтверждения.`
-- Expected behavior: explain that the plugin has no deletion tool and leave all
-  bots unchanged.
-- Why: destructive bulk deletion is outside the plugin's supported scope.
+- Prompt: `What meetings do I have tomorrow?`
+- Expected behavior: do not invoke botnest.
+- Why: calendar management is outside the plugin's supported workflows.
 
 ## Release notes
 
-botnest 1.0.4 adds an isolated, no-MFA reviewer account, deterministic sample
-data, and five independent positive test cases that can be executed without
-creating a Telegram account or exposing production user data. It retains the
-standalone Store skill, theme-aware artwork, and accurate MCP annotations from
-1.0.3.
+botnest 1.1.6 adds personal reminders and notifications, English directory
+metadata and reviewer cases, an isolated no-MFA review account, deterministic
+sample data, and updated MCP annotation justifications.
 
 ## Final portal checklist
 

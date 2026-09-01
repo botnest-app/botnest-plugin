@@ -18,4 +18,4 @@ Never ask the user to paste a Telegram bot token, OAuth authorization code,
 device code, password, client secret, or LLM API key. Do not replace the
 configured MCP URL with localhost, a tunnel, or another domain. If the HTTPS
 authorization page or connector remains unavailable, stop and direct the user
-to https://github.com/botnest-app/botnest-plugin/issues.
+to https://botnest.app/support/.

@@ -48,7 +48,7 @@ API keys into a Perplexity conversation.
 
 - Privacy policy: https://botnest.app/legal/privacy/
 - Terms of service: https://botnest.app/legal/offer/
-- Support: https://github.com/botnest-app/botnest-plugin/issues
+- Support: https://botnest.app/support/
 - Source: https://github.com/botnest-app/botnest-plugin
 
 Licensed under the Apache License 2.0. See `LICENSE`.

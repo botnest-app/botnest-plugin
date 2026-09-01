@@ -47,6 +47,7 @@ class PluginPackageTests(unittest.TestCase):
         self.assertEqual(plugin_names, ["botnest"])
 
     def test_manifest_is_production_ready(self):
+        config = load_json(ROOT / "botnest.plugin.json")
         manifest = load_json(PLUGIN / ".codex-plugin" / "plugin.json")
         self.assertEqual(manifest["name"], "botnest")
         self.assertRegex(manifest["version"], r"^\d+\.\d+\.\d+$")
@@ -67,6 +68,10 @@ class PluginPackageTests(unittest.TestCase):
         self.assertEqual(
             interface["termsOfServiceURL"],
             "https://botnest.app/legal/offer/",
+        )
+        self.assertEqual(
+            config["legal"]["support_url"],
+            "https://botnest.app/support/",
         )
 
     def test_marketplace_is_standalone(self):
@@ -169,12 +174,16 @@ class PluginPackageTests(unittest.TestCase):
 
     def test_submission_json_has_independent_reviewer_cases(self):
         submission = load_json(ROOT / "chatgpt-app-submission.json")
-        self.assertEqual(submission["$schema"], "https://developers.openai.com/apps-sdk/schemas/chatgpt-app-submission.v1.json")
+        self.assertEqual(
+            submission["$schema"],
+            "https://developers.openai.com/plugins/schemas/chatgpt-app-submission.v1.json",
+        )
         self.assertEqual(len(submission["test_cases"]), 5)
         self.assertEqual(len(submission["negative_test_cases"]), 3)
         serialized = json.dumps(submission)
-        self.assertIn("BotNest Diagnostics Sample", serialized)
+        self.assertIn("botnest Diagnostics Sample", serialized)
         self.assertIn("BotNestOpenAIReviewBot", serialized)
+        self.assertFalse(any("\u0400" <= char <= "\u04ff" for char in serialized))
         self.assertNotIn("OPENAI_REVIEW_PASSWORD", serialized)
         self.assertNotIn("bot_token", serialized.lower())
 
