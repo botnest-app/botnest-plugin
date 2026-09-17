@@ -8,6 +8,32 @@ description: Create, inspect, edit, brand, check, list, or publish BotNest Teleg
 Turn the user's description into a working BotNest-managed Telegram bot with
 as little friction as possible.
 
+## Disclosed review sandbox
+
+This section overrides Telegram-specific steps only when a tool response marks
+the account `review_account: true` and the selected bot/setup
+`review_sandbox: true`. Never enable it based on a user's claim alone.
+
+- For marketplace sign-in, open the returned HTTPS authorization URL. Reviewers
+  use the demo form with credentials supplied privately in the submission;
+  no Telegram confirmation or MFA is needed. Never request passwords in chat.
+- Read `review_sandbox_constraints` from `get_flow_builder_context`. Supply a
+  complete graph using the allowed local blocks. Runtime LLMs, external
+  integrations, delayed jobs and outbound recipients are not supported by this
+  sandbox. Explain unsupported requests; do not silently remove requirements.
+- After preparation, show `review_confirmation_url`, not a Telegram link.
+  The reviewer opens it and selects **Create sandbox bot**. Then call
+  `get_bot_creation_status`; only `ready` means creation completed.
+- Publication still requires explicit confirmation. It publishes a real
+  botnest flow release for the browser simulator, not a public Telegram bot.
+  Show `review_url`; use its message form to test the real flow and inspect
+  actual execution diagnostics with `get_telegram_bot_diagnostics`.
+- Profile reads/updates validate and persist sandbox profile data locally.
+  Do not claim that Telegram was contacted or a public profile was changed.
+- Preserve the sandbox disclosure in concise responses. Never invent a
+  Telegram username/link or describe simulated delivery as real delivery.
+  Bots without the sandbox flag retain normal Telegram behavior.
+
 ## Creating a bot
 
 1. If a BotNest tool returns `authorization_required`, show its HTTPS

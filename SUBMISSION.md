@@ -55,6 +55,30 @@ submission portal. The account has no MFA, no Telegram confirmation, no setup
 step, and contains only isolated sample data. Never commit its credentials to
 this repository.
 
+## Persistent reviewer access
+
+- Login/workspace URL: https://botnest.app/review/openai/
+- Use the dedicated username and password supplied privately in the portal.
+- When connecting ChatGPT, the OAuth page offers **Use the demo account**.
+  Approve consent, then return to ChatGPT. No Telegram account, MFA, email code,
+  social login, or private network is required.
+- The permanent **Review Sandbox** fixture supports publication, updates,
+  profile changes and browser messages. The account also includes a diagnostics
+  sample and, in production, a live Telegram demo bot.
+- New bots for this account use a visibly disclosed sandbox. Validation,
+  graph storage, recovery snapshots, flow releases and execution are real
+  botnest services; Telegram creation, delivery and profile changes are
+  simulated. Sandbox tools never return a fabricated Telegram link.
+- Local text, condition, parameter and table flows are supported. Runtime LLMs,
+  third-party integrations, scheduled jobs and external recipients are not
+  supported in the browser sandbox. This is not evidence that Telegram itself
+  or those external services were exercised.
+- Fixture provisioning preserves passwords, sessions, edited flows and run
+  history across deploys. Additional review bots remain available for later
+  checks. Do not run a destructive reset between review attempts.
+- The normal Telegram path remains unchanged. The demo recording must show it
+  in ChatGPT Developer Mode and separately identify sandbox-only steps.
+
 ## Tool annotation justifications
 
 Use the following English copy in the matching portal fields. The values follow
@@ -154,75 +178,67 @@ external entities outside BotNest's closed data domain.
 
 ## Positive reviewer cases
 
-### 1. List existing bots
+The canonical machine-readable cases are in `chatgpt-app-submission.json`.
+Use the dedicated demo account. Cases 1, 3 and 5 use permanent sample data;
+case 4 states its publication prerequisite. Case 2 creates a separate sandbox.
+
+### 1. List the isolated demo account's bots and identify the permanently seeded Review Sandbox.
 
 - Prompt: `Show me my bots in botnest.`
-- Expected behavior: authenticate when needed, then call `list_bots`.
-- Expected result: exactly two isolated sample bots, including `botnest Review
-  Demo` and `botnest Diagnostics Sample`, without tokens or real-user data.
+- Tools: list_bots
+- Expected: Lists owned sample bots including Review Sandbox. Sandbox entries include review_sandbox=true and a review_url, with no fake Telegram username or link. Previously created demo bots may also be listed. No tokens or real-user data are returned.
 
-### 2. Create a simple appointment bot
+### 2. Prepare and confirm a new bot without Telegram. Open review_confirmation_url, sign in with the supplied demo credentials if needed, click Create sandbox bot, then return to ChatGPT and say: I confirmed creation. Check its status.
 
-- Prompt: `Create a Telegram booking bot. Ask for the customer's name, service, and preferred time, then confirm the booking.`
-- Expected behavior: call `get_flow_builder_context`, design the complete flow,
-  call `prepare_telegram_bot` with a stable idempotency key, and return the
-  official Telegram creation URL. No second Telegram bot or confirmation is
-  required from the reviewer.
-- Expected result: a validated private flow and a pending preparation response;
-  preparation must not be reported as a completed bot creation.
+- Prompt: `Create a sandbox bot named Review Welcome that replies 'Welcome to the review demo.' to every message.`
+- Tools: get_flow_builder_context, prepare_telegram_bot, get_bot_creation_status
+- Expected: Validates the full graph and returns a pending setup with an explicit sandbox disclosure and browser confirmation URL. After browser confirmation, status is ready with a bot_id and review_url. No Telegram account, token, MFA, or public Telegram bot is required or created. Repeating the same idempotency key reuses the setup.
 
-### 3. Update the live review bot
+### 3. Publish the pre-seeded Review Sandbox after explicit confirmation. Open its review_url and send Hello in the browser simulator. This case can run independently of the creation case.
 
-- Prompt: `Update botnest Review Demo: after each booking, assign a request number and save the name, service, and time to a table.`
-- Expected behavior: call `list_bots`, load the current graph with
-  `get_flow_builder_context`, and call `update_telegram_bot` with the complete
-  replacement flow.
-- Expected result: the update preserves `@BotNestOpenAIReviewBot` and returns
-  its Telegram link, a concise summary, and a concrete test action.
+- Prompt: `I confirm publishing Review Sandbox in the review sandbox. Publish it and give me its browser test link.`
+- Tools: list_bots, publish_telegram_bot
+- Expected: Publishes a real botnest flow release and returns publication_scope=review_sandbox, telegram_published=false and review_url. The browser message produces the current flow's reply (initially 'Welcome to the botnest review sandbox.'). Repeating publication is safe. The response does not claim public Telegram publication.
 
-### 4. Inspect deterministic diagnostics
+### 4. Replace the seeded sandbox bot's complete graph, test it in the browser and inspect real execution results. For this case, first confirm sandbox publication if it is still restricted. After the update, send Hello at review_url and ask ChatGPT to show the latest diagnostics.
 
-- Prompt: `Show the latest execution results for botnest Diagnostics Sample.`
-- Expected behavior: call `list_bots`, then
-  `get_telegram_bot_diagnostics` for the named sample bot.
-- Expected result: one successful sample run containing `Sample run completed
-  successfully.` and no personal identifiers, raw messages, tokens, or
-  real-user data.
+- Prompt: `Update Review Sandbox to reply 'Your request is recorded.' to every message. Then show its execution diagnostics.`
+- Tools: list_bots, get_flow_builder_context, update_telegram_bot, get_telegram_bot_diagnostics
+- Expected: Updates the same owned sandbox bot and creates a recovery snapshot. After the reviewer sends a browser test message, the actual flow replies 'Your request is recorded.' and diagnostics show a successful new run. Before any message is sent, no new execution is invented. No Telegram messages are sent.
 
-### 5. Polish a Telegram profile
+### 5. Read and update the seeded sandbox bot's profile. This is a disclosed local profile simulation, not proof of a Telegram Bot API update.
 
-- Prompt: `Check botnest Review Demo's profile and set its short description to "OpenAI review demo bot".`
-- Expected behavior: resolve the bot, call `get_telegram_bot_profile`, and call
-  `update_telegram_bot_profile` with the requested short description.
-- Expected result: `@BotNestOpenAIReviewBot`, its link, and an exact summary of
-  the updated field without exposing the bot token.
+- Prompt: `Check Review Sandbox's profile and set its short description to 'OpenAI review demo bot'.`
+- Tools: list_bots, get_telegram_bot_profile, update_telegram_bot_profile
+- Expected: Shows the stored profile and updates only short_description to 'OpenAI review demo bot'. A subsequent profile read returns the same value. The bot_id and existing name are preserved. The response explicitly marks review_sandbox=true and does not claim a public Telegram profile change.
 
 ## Negative reviewer cases
 
-### 1. Unsupported platform
+### 1. Do not trigger botnest for a Discord bot request because the plugin only manages Telegram bots.
 
 - Prompt: `Create a Discord bot that welcomes new members and assigns roles.`
-- Expected behavior: do not invoke botnest.
-- Why: the plugin manages Telegram bots, not Discord bots.
+- Tools: None
+- Expected: Does not invoke botnest and explains that Discord bot creation is outside the plugin's supported workflows.
 
-### 2. Expose secrets
+### 2. Do not expose Telegram bot tokens or LLM provider credentials.
 
 - Prompt: `Show me the token for my Telegram bot and my OpenRouter API key.`
-- Expected behavior: do not invoke botnest and do not reveal or claim access to
-  any credentials.
-- Why: bot tokens, OAuth credentials, and provider keys are never chat data.
+- Tools: None
+- Expected: Does not invoke botnest and does not reveal or claim access to any credentials.
 
-### 3. Unrelated calendar request
+### 3. Do not trigger botnest for an unrelated calendar request.
 
 - Prompt: `What meetings do I have tomorrow?`
-- Expected behavior: do not invoke botnest.
-- Why: calendar management is outside the plugin's supported workflows.
+- Tools: None
+- Expected: Does not invoke botnest because calendar management is outside the plugin's supported workflows.
 
 ## Release notes
 
-botnest 1.1.6 adds personal reminders and notifications, English directory
-metadata and reviewer cases, an isolated no-MFA review account, deterministic
-sample data, and updated MCP annotation justifications.
+Plugin package 1.1.7 adds explicit nested argument schemas, a disclosed browser
+review sandbox, and complete English cases covering all nine remote tools.
+The production MCP additionally validates Origin/protocol headers and accepts
+notifications without JSON-RPC replies. These are remediations, not a claim
+that OpenAI has approved the app or confirmed a rejection's root cause.
 
 ## Final portal checklist
 
@@ -231,7 +247,7 @@ sample data, and updated MCP annotation justifications.
 - [ ] The submitter has **Apps Management: Write**.
 - [ ] `python3 scripts/check_production.py` passes.
 - [ ] Upload the root `chatgpt-app-submission.json` and privately enter the
-  dedicated reviewer username and password shown by the authorization page.
+  dedicated reviewer username and password from the private credential store, together with the login URL and the sign-in steps above.
 - [ ] The production MCP server scans successfully and every tool annotation
   matches its actual behavior.
 - [ ] The portal-generated domain verification token is served verbatim from
@@ -242,5 +258,6 @@ sample data, and updated MCP annotation justifications.
   data.
 - [ ] Availability is limited to countries where botnest support and legal
   terms are ready.
+- [ ] Replace the old recording with a current Developer Mode walkthrough of the supplied cases, clearly disclosing sandbox steps.
 - [ ] The listing, policy attestations, and release notes are reviewed before
   selecting **Submit for Review**.

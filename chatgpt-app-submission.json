@@ -27,8 +27,8 @@
         "destructiveHint": false
       },
       "justifications": {
-        "read_only_justification": "Creates or reuses a private botnest setup and links it to the authenticated Telegram identity.",
-        "open_world_justification": "Only writes private botnest setup state and requires separate user confirmation in Telegram before a bot is created.",
+        "read_only_justification": "Creates or reuses a private owned botnest setup. The dedicated review account prepares a clearly marked sandbox setup.",
+        "open_world_justification": "Only writes private botnest setup state. Normal accounts confirm creation in Telegram; the disclosed review sandbox uses an authenticated browser confirmation.",
         "destructive_justification": "Does not delete or overwrite an existing bot and uses an idempotency key for safe retries."
       }
     },
@@ -119,43 +119,43 @@
   },
   "test_cases": [
     {
-      "description": "List the authenticated user's existing Telegram bots.",
+      "description": "List the isolated demo account's bots and identify the permanently seeded Review Sandbox.",
       "user_prompt": "Show me my bots in botnest.",
       "file_attachment_urls": null,
       "tools_triggered": "list_bots",
-      "expected_output": "Returns the isolated review account's two sample bots, including botnest Review Demo and botnest Diagnostics Sample, without tokens or real-user data.",
+      "expected_output": "Lists owned sample bots including Review Sandbox. Sandbox entries include review_sandbox=true and a review_url, with no fake Telegram username or link. Previously created demo bots may also be listed. No tokens or real-user data are returned.",
       "expected_output_url": null
     },
     {
-      "description": "Design and prepare a simple appointment bot without requiring the reviewer to create another Telegram account or bot.",
-      "user_prompt": "Create a Telegram booking bot. Ask for the customer's name, service, and preferred time, then confirm the booking.",
+      "description": "Prepare and confirm a new bot without Telegram. Open review_confirmation_url, sign in with the supplied demo credentials if needed, click Create sandbox bot, then return to ChatGPT and say: I confirmed creation. Check its status.",
+      "user_prompt": "Create a sandbox bot named Review Welcome that replies 'Welcome to the review demo.' to every message.",
       "file_attachment_urls": null,
-      "tools_triggered": "get_flow_builder_context, prepare_telegram_bot",
-      "expected_output": "Validates and stores a private appointment flow and returns the official Telegram creation link. The response clearly says that preparation is pending and does not claim the bot is already created.",
+      "tools_triggered": "get_flow_builder_context, prepare_telegram_bot, get_bot_creation_status",
+      "expected_output": "Validates the full graph and returns a pending setup with an explicit sandbox disclosure and browser confirmation URL. After browser confirmation, status is ready with a bot_id and review_url. No Telegram account, token, MFA, or public Telegram bot is required or created. Repeating the same idempotency key reuses the setup.",
       "expected_output_url": null
     },
     {
-      "description": "Replace the behavior of the named live review bot while preserving its Telegram identity.",
-      "user_prompt": "Update botnest Review Demo: after each booking, assign a request number and save the name, service, and time to a table.",
+      "description": "Publish the pre-seeded Review Sandbox after explicit confirmation. Open its review_url and send Hello in the browser simulator. This case can run independently of the creation case.",
+      "user_prompt": "I confirm publishing Review Sandbox in the review sandbox. Publish it and give me its browser test link.",
       "file_attachment_urls": null,
-      "tools_triggered": "list_bots, get_flow_builder_context, update_telegram_bot",
-      "expected_output": "Updates the complete flow of botnest Review Demo, preserves @BotNestOpenAIReviewBot, and returns its Telegram link plus a concise summary and test action.",
+      "tools_triggered": "list_bots, publish_telegram_bot",
+      "expected_output": "Publishes a real botnest flow release and returns publication_scope=review_sandbox, telegram_published=false and review_url. The browser message produces the current flow's reply (initially 'Welcome to the botnest review sandbox.'). Repeating publication is safe. The response does not claim public Telegram publication.",
       "expected_output_url": null
     },
     {
-      "description": "Inspect deterministic sample diagnostics without reading a real user's logs.",
-      "user_prompt": "Show the latest execution results for botnest Diagnostics Sample.",
+      "description": "Replace the seeded sandbox bot's complete graph, test it in the browser and inspect real execution results. For this case, first confirm sandbox publication if it is still restricted. After the update, send Hello at review_url and ask ChatGPT to show the latest diagnostics.",
+      "user_prompt": "Update Review Sandbox to reply 'Your request is recorded.' to every message. Then show its execution diagnostics.",
       "file_attachment_urls": null,
-      "tools_triggered": "list_bots, get_telegram_bot_diagnostics",
-      "expected_output": "Returns one successful sample flow run with the detail 'Sample run completed successfully.' and no personal identifiers, raw messages, tokens, or real-user data.",
+      "tools_triggered": "list_bots, get_flow_builder_context, update_telegram_bot, get_telegram_bot_diagnostics",
+      "expected_output": "Updates the same owned sandbox bot and creates a recovery snapshot. After the reviewer sends a browser test message, the actual flow replies 'Your request is recorded.' and diagnostics show a successful new run. Before any message is sent, no new execution is invented. No Telegram messages are sent.",
       "expected_output_url": null
     },
     {
-      "description": "Read and update the public profile of an existing Telegram bot.",
-      "user_prompt": "Check botnest Review Demo's profile and set its short description to \"OpenAI review demo bot\".",
+      "description": "Read and update the seeded sandbox bot's profile. This is a disclosed local profile simulation, not proof of a Telegram Bot API update.",
+      "user_prompt": "Check Review Sandbox's profile and set its short description to 'OpenAI review demo bot'.",
       "file_attachment_urls": null,
       "tools_triggered": "list_bots, get_telegram_bot_profile, update_telegram_bot_profile",
-      "expected_output": "Reads the current profile, sets the short description on @BotNestOpenAIReviewBot, and returns the updated profile and Telegram link without exposing the bot token.",
+      "expected_output": "Shows the stored profile and updates only short_description to 'OpenAI review demo bot'. A subsequent profile read returns the same value. The bot_id and existing name are preserved. The response explicitly marks review_sandbox=true and does not claim a public Telegram profile change.",
       "expected_output_url": null
     }
   ],
