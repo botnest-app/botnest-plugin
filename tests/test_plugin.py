@@ -172,7 +172,7 @@ class PluginPackageTests(unittest.TestCase):
                     ["create-telegram-bot/SKILL.md"],
                 )
 
-    def test_submission_json_has_independent_reviewer_cases(self):
+    def test_submission_json_has_complete_disclosed_reviewer_cases(self):
         submission = load_json(ROOT / "chatgpt-app-submission.json")
         self.assertEqual(
             submission["$schema"],
@@ -181,8 +181,10 @@ class PluginPackageTests(unittest.TestCase):
         self.assertEqual(len(submission["test_cases"]), 5)
         self.assertEqual(len(submission["negative_test_cases"]), 3)
         serialized = json.dumps(submission)
-        self.assertIn("botnest Diagnostics Sample", serialized)
-        self.assertIn("BotNestOpenAIReviewBot", serialized)
+        self.assertIn("Review Sandbox", serialized)
+        self.assertIn("telegram_published=false", serialized)
+        covered = {name.strip() for case in submission["test_cases"] for name in case["tools_triggered"].split(",")}
+        self.assertEqual(covered, set(submission["tools"]))
         self.assertFalse(any("\u0400" <= char <= "\u04ff" for char in serialized))
         self.assertNotIn("OPENAI_REVIEW_PASSWORD", serialized)
         self.assertNotIn("bot_token", serialized.lower())
@@ -202,6 +204,16 @@ class McpBridgeTests(unittest.TestCase):
             self.proxy.USER_AGENT,
             f"BotNest-Plugin/{expected_version}",
         )
+
+    def test_bridge_has_explicit_nested_argument_schemas(self):
+        tools = {tool["name"]: tool for tool in self.proxy.REMOTE_TOOLS}
+        flow = tools["prepare_telegram_bot"]["inputSchema"]["properties"]["flow"]
+        self.assertIn("blocks", flow["properties"])
+        self.assertTrue(flow["properties"]["blocks"]["items"]["oneOf"])
+        profile = tools["update_telegram_bot_profile"]["inputSchema"]["properties"]
+        self.assertEqual(profile["commands"]["items"]["required"], ["command", "description"])
+        self.assertIn("type", profile["menu_button"]["required"])
+        self.assertIn("avatar_path", profile)
 
     def test_mcp_manifest_uses_the_production_bridge(self):
         config = load_json(PLUGIN / ".mcp.json")

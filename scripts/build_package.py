@@ -48,6 +48,14 @@ def main() -> None:
     skill_output = DIST / "create-telegram-bot-skill.zip"
     DIST.mkdir(exist_ok=True)
 
+    # Older portal versions still require the apps-sdk schema identifier.
+    # Keep the canonical source compatible and provide the current identifier too.
+    submission = json.loads((ROOT / "chatgpt-app-submission.json").read_text())
+    current_submission = DIST / "current-schema" / "chatgpt-app-submission.json"
+    current_submission.parent.mkdir(exist_ok=True)
+    submission["$schema"] = "https://developers.openai.com/plugins/schemas/chatgpt-app-submission.v1.json"
+    current_submission.write_text(json.dumps(submission, indent=2) + "\n")
+
     codex_files = sorted(
         path
         for path in PLUGIN.rglob("*")
@@ -75,6 +83,7 @@ def main() -> None:
     print(perplexity_output.relative_to(ROOT))
     print(skill_output.relative_to(ROOT))
     print(perplexity_skill_output.relative_to(ROOT))
+    print(current_submission.relative_to(ROOT))
 
 
 if __name__ == "__main__":

@@ -1,0 +1,4112 @@
+{
+  "flow": {
+    "type": "object",
+    "description": "Complete replacement graph. Get the block catalog and examples from get_flow_builder_context first. Connections reference local block IDs. Configuration depends on block kind.",
+    "properties": {
+      "name": {
+        "type": "string",
+        "maxLength": 255
+      },
+      "id": {
+        "type": "integer"
+      },
+      "bot_id": {
+        "type": "integer"
+      },
+      "format_version": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 1
+      },
+      "revision": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "identity_format": {
+        "type": "string",
+        "enum": [
+          "editor",
+          "database"
+        ]
+      },
+      "blocks": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 500,
+        "items": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
+                },
+                "kind": {
+                  "const": "channel_feed"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "client_id": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "config": {
+                  "type": "object",
+                  "required": [],
+                  "properties": {
+                    "channels": {
+                      "type": "array",
+                      "description": "\u041c\u0430\u0441\u0441\u0438\u0432 slugs \u043a\u0430\u043d\u0430\u043b\u043e\u0432 (\u0411\u0415\u0417 @, \u0442\u043e\u043b\u044c\u043a\u043e username)",
+                      "items": {
+                        "type": "string"
+                      },
+                      "default": []
+                    },
+                    "mode": {
+                      "enum": [
+                        "since_last",
+                        "last_hours",
+                        "last_posts"
+                      ],
+                      "default": "since_last",
+                      "description": "\u0420\u0435\u0436\u0438\u043c \u043f\u043e\u043b\u0443\u0447\u0435\u043d\u0438\u044f \u043f\u043e\u0441\u0442\u043e\u0432"
+                    },
+                    "hours": {
+                      "type": [
+                        "number",
+                        "string"
+                      ],
+                      "description": "\u041a\u043e\u043b\u0438\u0447\u0435\u0441\u0442\u0432\u043e \u0447\u0430\u0441\u043e\u0432 \u043d\u0430\u0437\u0430\u0434 (\u0434\u043b\u044f last_hours)",
+                      "minimum": 0,
+                      "default": 24
+                    },
+                    "limit": {
+                      "type": [
+                        "integer",
+                        "string",
+                        "null"
+                      ],
+                      "default": 10,
+                      "description": "\u041c\u0430\u043a\u0441\u0438\u043c\u0443\u043c \u043f\u043e\u0441\u0442\u043e\u0432"
+                    },
+                    "output_field": {
+                      "type": "string",
+                      "default": "channel_posts"
+                    },
+                    "use_all": {
+                      "type": "boolean",
+                      "default": false
+                    }
+                  },
+                  "allOf": [
+                    {
+                      "if": {
+                        "required": [
+                          "use_all"
+                        ],
+                        "properties": {
+                          "use_all": {
+                            "const": true
+                          }
+                        }
+                      },
+                      "then": {},
+                      "else": {
+                        "required": [
+                          "channels"
+                        ],
+                        "properties": {
+                          "channels": {
+                            "minItems": 1
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "config_version": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "ui_x": {
+                  "type": "number"
+                },
+                "ui_y": {
+                  "type": "number"
+                },
+                "group": {
+                  "type": [
+                    "integer",
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "config"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
+                },
+                "kind": {
+                  "const": "composite"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "client_id": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "config": {
+                  "type": "object",
+                  "required": [
+                    "ports"
+                  ],
+                  "properties": {
+                    "ports": {
+                      "type": "object",
+                      "required": [
+                        "inputs",
+                        "outputs"
+                      ],
+                      "properties": {
+                        "inputs": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "name"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 64
+                              },
+                              "name": {
+                                "type": "string",
+                                "maxLength": 128
+                              }
+                            }
+                          },
+                          "maxItems": 64,
+                          "uniqueBy": "id",
+                          "minItems": 1
+                        },
+                        "outputs": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "name"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 64
+                              },
+                              "name": {
+                                "type": "string",
+                                "maxLength": 128
+                              }
+                            }
+                          },
+                          "maxItems": 64,
+                          "uniqueBy": "id"
+                        }
+                      },
+                      "description": "\u0418\u043c\u0435\u043d\u043e\u0432\u0430\u043d\u043d\u044b\u0435 \u0432\u0445\u043e\u0434\u044b \u0438 \u0432\u044b\u0445\u043e\u0434\u044b \u043a\u043e\u043c\u043f\u043e\u043d\u0435\u043d\u0442\u0430",
+                      "default": {
+                        "inputs": [
+                          {
+                            "id": "in_default",
+                            "name": "\u0412\u0445\u043e\u0434"
+                          }
+                        ],
+                        "outputs": [
+                          {
+                            "id": "default",
+                            "name": "\u0412\u044b\u0445\u043e\u0434"
+                          }
+                        ]
+                      }
+                    },
+                    "component": {
+                      "type": "object",
+                      "properties": {
+                        "parameters": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "bindings": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "required": [
+                                    "block"
+                                  ],
+                                  "properties": {
+                                    "block": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "config_version": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "ui_x": {
+                  "type": "number"
+                },
+                "ui_y": {
+                  "type": "number"
+                },
+                "group": {
+                  "type": [
+                    "integer",
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "config"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
+                },
+                "kind": {
+                  "const": "condition"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "client_id": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "config": {
+                  "type": "object",
+                  "required": [
+                    "conditions"
+                  ],
+                  "properties": {
+                    "conditions": {
+                      "type": "array",
+                      "minItems": 1,
+                      "maxItems": 64,
+                      "uniqueBy": "id",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "path",
+                          "operator",
+                          "value_type",
+                          "joiner",
+                          "value"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": [
+                              "string",
+                              "integer"
+                            ],
+                            "minLength": 1,
+                            "maxLength": 128
+                          },
+                          "path": {
+                            "type": "string",
+                            "maxLength": 2048
+                          },
+                          "operator": {
+                            "type": "string",
+                            "enum": [
+                              "contains",
+                              "contains_lemma",
+                              "equals",
+                              "regex",
+                              "starts_with",
+                              "ends_with",
+                              "exists",
+                              "gt",
+                              "gte",
+                              "lt",
+                              "lte",
+                              "reply_to_bot"
+                            ]
+                          },
+                          "value_type": {
+                            "type": "string",
+                            "enum": [
+                              "string",
+                              "float",
+                              "number",
+                              "bool",
+                              "date"
+                            ]
+                          },
+                          "joiner": {
+                            "type": "string",
+                            "enum": [
+                              "and",
+                              "or"
+                            ]
+                          },
+                          "value": {}
+                        }
+                      },
+                      "description": "\u041c\u0430\u0441\u0441\u0438\u0432 \u0443\u0441\u043b\u043e\u0432\u0438\u0439 \u0434\u043b\u044f \u043f\u0440\u043e\u0432\u0435\u0440\u043a\u0438",
+                      "default": [
+                        {
+                          "path": "${message.text}",
+                          "operator": "contains",
+                          "value_type": "string",
+                          "joiner": "and",
+                          "value": "",
+                          "id": "cond-initial"
+                        }
+                      ]
+                    },
+                    "joiner": {
+                      "type": "string",
+                      "enum": [
+                        "and",
+                        "or"
+                      ],
+                      "default": "and"
+                    },
+                    "operator": {
+                      "type": "string",
+                      "default": "contains"
+                    },
+                    "value": {
+                      "type": "string",
+                      "default": ""
+                    }
+                  }
+                },
+                "config_version": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "ui_x": {
+                  "type": "number"
+                },
+                "ui_y": {
+                  "type": "number"
+                },
+                "group": {
+                  "type": [
+                    "integer",
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "config"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
+                },
+                "kind": {
+                  "const": "datetime"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "client_id": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "config": {
+                  "type": "object",
+                  "required": [],
+                  "properties": {
+                    "operation": {
+                      "enum": [
+                        "now",
+                        "format",
+                        "add"
+                      ],
+                      "default": "now"
+                    },
+                    "source": {
+                      "type": "string",
+                      "default": ""
+                    },
+                    "timezone": {
+                      "type": "string",
+                      "default": "UTC"
+                    },
+                    "amount": {
+                      "type": [
+                        "string",
+                        "number"
+                      ],
+                      "default": 1
+                    },
+                    "unit": {
+                      "enum": [
+                        "minutes",
+                        "hours",
+                        "days",
+                        "weeks"
+                      ],
+                      "default": "days"
+                    },
+                    "format": {
+                      "type": "string",
+                      "default": "iso"
+                    },
+                    "output_field": {
+                      "type": "string",
+                      "default": "datetime_result"
+                    }
+                  }
+                },
+                "config_version": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "ui_x": {
+                  "type": "number"
+                },
+                "ui_y": {
+                  "type": "number"
+                },
+                "group": {
+                  "type": [
+                    "integer",
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "config"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
+                },
+                "kind": {
+                  "const": "delay"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "client_id": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "config": {
+                  "type": "object",
+                  "required": [],
+                  "properties": {
+                    "seconds": {
+                      "type": [
+                        "string",
+                        "number"
+                      ],
+                      "minimum": 0,
+                      "maximum": 10,
+                      "default": 1
+                    }
+                  }
+                },
+                "config_version": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "ui_x": {
+                  "type": "number"
+                },
+                "ui_y": {
+                  "type": "number"
+                },
+                "group": {
+                  "type": [
+                    "integer",
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "config"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
+                },
+                "kind": {
+                  "const": "hash"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "client_id": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "config": {
+                  "type": "object",
+                  "required": [
+                    "template"
+                  ],
+                  "properties": {
+                    "template": {
+                      "type": "string",
+                      "description": "\u0418\u0441\u0445\u043e\u0434\u043d\u044b\u0439 \u0442\u0435\u043a\u0441\u0442 \u0441 \u043f\u043b\u0435\u0439\u0441\u0445\u043e\u043b\u0434\u0435\u0440\u0430\u043c\u0438",
+                      "default": ""
+                    },
+                    "algorithm": {
+                      "enum": [
+                        "sha256",
+                        "sha1",
+                        "md5"
+                      ],
+                      "default": "sha256",
+                      "description": "\u0410\u043b\u0433\u043e\u0440\u0438\u0442\u043c \u0445\u0435\u0448\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f"
+                    },
+                    "output_field": {
+                      "type": "string",
+                      "default": "hash_result"
+                    }
+                  }
+                },
+                "config_version": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "ui_x": {
+                  "type": "number"
+                },
+                "ui_y": {
+                  "type": "number"
+                },
+                "group": {
+                  "type": [
+                    "integer",
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "config"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
+                },
+                "kind": {
+                  "const": "history"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "client_id": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "config": {
+                  "type": "object",
+                  "required": [],
+                  "properties": {
+                    "mode": {
+                      "enum": [
+                        "count",
+                        "period"
+                      ],
+                      "default": "count",
+                      "description": "\u0420\u0435\u0436\u0438\u043c \u0432\u044b\u0431\u043e\u0440\u043a\u0438: count \u2014 \u043f\u043e\u0441\u043b\u0435\u0434\u043d\u0438\u0435 N \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0439, period \u2014 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u044f \u0437\u0430 \u043f\u0435\u0440\u0438\u043e\u0434"
+                    },
+                    "limit": {
+                      "type": [
+                        "integer",
+                        "string",
+                        "null"
+                      ],
+                      "default": 20,
+                      "minimum": 1,
+                      "maximum": 1000,
+                      "description": "\u041a\u043e\u043b\u0438\u0447\u0435\u0441\u0442\u0432\u043e \u043f\u043e\u0441\u043b\u0435\u0434\u043d\u0438\u0445 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0439 (\u0442\u043e\u043b\u044c\u043a\u043e \u0434\u043b\u044f mode=count)"
+                    },
+                    "period_value": {
+                      "type": [
+                        "integer",
+                        "string"
+                      ],
+                      "default": 1,
+                      "description": "\u041a\u043e\u043b\u0438\u0447\u0435\u0441\u0442\u0432\u043e \u0435\u0434\u0438\u043d\u0438\u0446 \u043f\u0435\u0440\u0438\u043e\u0434\u0430 (\u0442\u043e\u043b\u044c\u043a\u043e \u0434\u043b\u044f mode=period). \u041f\u0440\u0438\u043c\u0435\u0440: 1 = \u043f\u043e\u0441\u043b\u0435\u0434\u043d\u0438\u0435 1 \u0441\u0443\u0442\u043a\u0438",
+                      "minimum": 1
+                    },
+                    "period_unit": {
+                      "enum": [
+                        "hours",
+                        "days",
+                        "weeks",
+                        "months"
+                      ],
+                      "default": "days",
+                      "description": "\u0415\u0434\u0438\u043d\u0438\u0446\u0430 \u043f\u0435\u0440\u0438\u043e\u0434\u0430 (\u0442\u043e\u043b\u044c\u043a\u043e \u0434\u043b\u044f mode=period)"
+                    },
+                    "output_field": {
+                      "type": "string",
+                      "default": "chat_history"
+                    },
+                    "exclude_bots": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "\u041d\u0435 \u0432\u043a\u043b\u044e\u0447\u0430\u0442\u044c \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u044f \u0431\u043e\u0442\u043e\u0432"
+                    },
+                    "exclude_commands": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "\u041d\u0435 \u0432\u043a\u043b\u044e\u0447\u0430\u0442\u044c \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u044f-\u043a\u043e\u043c\u0430\u043d\u0434\u044b"
+                    }
+                  }
+                },
+                "config_version": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "ui_x": {
+                  "type": "number"
+                },
+                "ui_y": {
+                  "type": "number"
+                },
+                "group": {
+                  "type": [
+                    "integer",
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "config"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
+                },
+                "kind": {
+                  "const": "input"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "client_id": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "config": {
+                  "type": "object",
+                  "required": [
+                    "trigger_type"
+                  ],
+                  "properties": {
+                    "trigger_type": {
+                      "enum": [
+                        "bot_member_update",
+                        "callback",
+                        "join_request",
+                        "member_update",
+                        "message",
+                        "messaging_events",
+                        "poll_answer",
+                        "poll_result",
+                        "reaction",
+                        "schedule",
+                        "telegram_events",
+                        "webhook"
+                      ],
+                      "description": "\u0414\u043b\u044f \u0432\u0445\u043e\u0434\u044f\u0449\u0438\u0445 \u0441\u043e\u0431\u044b\u0442\u0438\u0439 \u0438\u0441\u043f\u043e\u043b\u044c\u0437\u0443\u0439\u0442\u0435 messaging_events. \u0412\u044b\u0431\u0438\u0440\u0430\u0439\u0442\u0435 \u0441\u0435\u043c\u0430\u043d\u0442\u0438\u0447\u0435\u0441\u043a\u0438\u0439 \u0432\u044b\u0445\u043e\u0434: message/callback/reaction/poll_answer/poll_result/member_update/bot_member_update/join_request. \u0421\u0442\u0430\u0440\u043e\u0435 telegram_events \u043f\u0440\u0438\u043d\u0438\u043c\u0430\u0435\u0442\u0441\u044f \u0434\u043b\u044f \u0441\u043e\u0432\u043c\u0435\u0441\u0442\u0438\u043c\u043e\u0441\u0442\u0438. \u041a\u043e\u043c\u0430\u043d\u0434\u044b \u0438 \u0444\u0438\u043b\u044c\u0442\u0440\u044b \u0437\u0430\u0434\u0430\u044e\u0442\u0441\u044f \u0431\u043b\u043e\u043a\u043e\u043c condition.",
+                      "type": "string",
+                      "default": "messaging_events"
+                    },
+                    "schedule": {
+                      "type": "object",
+                      "description": "\u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438 \u0440\u0430\u0441\u043f\u0438\u0441\u0430\u043d\u0438\u044f (\u0442\u043e\u043b\u044c\u043a\u043e \u0434\u043b\u044f trigger_type=schedule). \u041e\u0411\u042f\u0417\u0410\u0422\u0415\u041b\u042c\u041d\u041e \u043f\u0440\u0438 schedule!",
+                      "properties": {
+                        "mode": {
+                          "enum": [
+                            "hourly",
+                            "daily",
+                            "weekly",
+                            "monthly",
+                            "interval"
+                          ],
+                          "description": "\u0420\u0435\u0436\u0438\u043c \u0440\u0430\u0441\u043f\u0438\u0441\u0430\u043d\u0438\u044f"
+                        },
+                        "time": {
+                          "type": "string",
+                          "description": "\u0412\u0440\u0435\u043c\u044f HH:MM \u0434\u043b\u044f daily/weekly/monthly",
+                          "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$(?![\\s\\S])"
+                        },
+                        "timezone": {
+                          "type": "string",
+                          "default": "UTC"
+                        },
+                        "day_of_week": {
+                          "type": "integer",
+                          "description": "\u0414\u0435\u043d\u044c \u043d\u0435\u0434\u0435\u043b\u0438: 1=\u043f\u043d, 7=\u0432\u0441.",
+                          "minimum": 1,
+                          "maximum": 7
+                        },
+                        "day_of_month": {
+                          "type": "integer",
+                          "description": "\u0414\u0435\u043d\u044c \u043c\u0435\u0441\u044f\u0446\u0430 (1-31) \u0434\u043b\u044f monthly",
+                          "minimum": 1,
+                          "maximum": 31
+                        },
+                        "interval_minutes": {
+                          "type": "integer",
+                          "description": "\u0418\u043d\u0442\u0435\u0440\u0432\u0430\u043b \u0432 \u043c\u0438\u043d\u0443\u0442\u0430\u0445 \u0434\u043b\u044f interval \u0440\u0435\u0436\u0438\u043c\u0430",
+                          "minimum": 1
+                        },
+                        "chat_id": {
+                          "type": [
+                            "string",
+                            "integer",
+                            "null"
+                          ],
+                          "description": "ID \u0447\u0430\u0442\u0430 \u0434\u043b\u044f \u043e\u0442\u043f\u0440\u0430\u0432\u043a\u0438 (\u043e\u0431\u044f\u0437\u0430\u0442\u0435\u043b\u044c\u043d\u043e \u0434\u043b\u044f schedule!)"
+                        }
+                      }
+                    },
+                    "active_outputs": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "boolean"
+                      },
+                      "default": {
+                        "message": true,
+                        "callback": true,
+                        "reaction": true,
+                        "poll_answer": true,
+                        "poll_result": true,
+                        "member_update": true,
+                        "bot_member_update": true,
+                        "join_request": true
+                      }
+                    }
+                  },
+                  "allOf": [
+                    {
+                      "if": {
+                        "required": [
+                          "trigger_type"
+                        ],
+                        "properties": {
+                          "trigger_type": {
+                            "const": "schedule"
+                          }
+                        }
+                      },
+                      "then": {
+                        "required": [
+                          "schedule"
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "config_version": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "ui_x": {
+                  "type": "number"
+                },
+                "ui_y": {
+                  "type": "number"
+                },
+                "group": {
+                  "type": [
+                    "integer",
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "config"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
+                },
+                "kind": {
+                  "const": "integration"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "client_id": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "config": {
+                  "type": "object",
+                  "required": [
+                    "service",
+                    "connection_id",
+                    "action_id",
+                    "input"
+                  ],
+                  "properties": {
+                    "service": {
+                      "type": "string",
+                      "description": "\u0421\u0442\u0430\u0431\u0438\u043b\u044c\u043d\u044b\u0439 service id \u0438\u0437 \u0430\u043a\u0442\u0443\u0430\u043b\u044c\u043d\u043e\u0433\u043e \u043a\u0430\u0442\u0430\u043b\u043e\u0433\u0430 OpenConnector",
+                      "minLength": 1,
+                      "pattern": "\\S",
+                      "maxLength": 256,
+                      "default": ""
+                    },
+                    "connection_id": {
+                      "type": "string",
+                      "description": "UUID \u043f\u043e\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u044f \u0432\u043b\u0430\u0434\u0435\u043b\u044c\u0446\u0430 \u0431\u043e\u0442\u0430; \u043d\u0435 \u044f\u0432\u043b\u044f\u0435\u0442\u0441\u044f \u0441\u0435\u043a\u0440\u0435\u0442\u043e\u043c \u0438 \u043d\u0435 \u0437\u0430\u043c\u0435\u043d\u044f\u0435\u0442\u0441\u044f \u043f\u0440\u043e\u0438\u0437\u0432\u043e\u043b\u044c\u043d\u044b\u043c alias",
+                      "minLength": 1,
+                      "pattern": "\\S",
+                      "maxLength": 256,
+                      "default": ""
+                    },
+                    "action_id": {
+                      "type": "string",
+                      "description": "\u041f\u043e\u043b\u043d\u044b\u0439 action id \u0432\u0438\u0434\u0430 <service>.<action> \u0438\u0437 \u0430\u043a\u0442\u0443\u0430\u043b\u044c\u043d\u043e\u0433\u043e \u043a\u0430\u0442\u0430\u043b\u043e\u0433\u0430",
+                      "minLength": 1,
+                      "pattern": "\\S",
+                      "maxLength": 256,
+                      "default": ""
+                    },
+                    "input": {
+                      "type": "object",
+                      "description": "\u041f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u044b \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044f \u043f\u043e \u0435\u0433\u043e \u0434\u0438\u043d\u0430\u043c\u0438\u0447\u0435\u0441\u043a\u043e\u0439 JSON Schema; \u0441\u0442\u0440\u043e\u043a\u0438 \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u044e\u0442 \u043f\u043b\u0435\u0439\u0441\u0445\u043e\u043b\u0434\u0435\u0440\u044b",
+                      "default": {}
+                    },
+                    "output_field": {
+                      "type": "string",
+                      "default": "integration_result"
+                    },
+                    "service_label": {
+                      "type": "string",
+                      "default": ""
+                    },
+                    "service_icon_url": {
+                      "type": "string",
+                      "default": ""
+                    },
+                    "connection_status": {
+                      "type": "string",
+                      "default": ""
+                    },
+                    "action_label": {
+                      "type": "string",
+                      "default": ""
+                    },
+                    "action_schema_checksum": {
+                      "type": "string",
+                      "default": ""
+                    },
+                    "action_input_schema": {
+                      "type": "object",
+                      "default": {
+                        "type": "object",
+                        "properties": {}
+                      }
+                    }
+                  }
+                },
+                "config_version": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "ui_x": {
+                  "type": "number"
+                },
+                "ui_y": {
+                  "type": "number"
+                },
+                "group": {
+                  "type": [
+                    "integer",
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "config"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
+                },
+                "kind": {
+                  "const": "iterate"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "client_id": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "config": {
+                  "type": "object",
+                  "required": [
+                    "array_source"
+                  ],
+                  "properties": {
+                    "array_source": {
+                      "type": "string",
+                      "description": "\u041f\u0443\u0442\u044c \u043a \u043c\u0430\u0441\u0441\u0438\u0432\u0443 ${table_result.rows}",
+                      "minLength": 1,
+                      "pattern": "\\S",
+                      "default": ""
+                    },
+                    "item_key": {
+                      "type": "string",
+                      "default": "item",
+                      "description": "\u041a\u043b\u044e\u0447 \u0434\u043b\u044f \u0442\u0435\u043a\u0443\u0449\u0435\u0433\u043e \u044d\u043b\u0435\u043c\u0435\u043d\u0442\u0430"
+                    },
+                    "output_field": {
+                      "type": "string",
+                      "default": "items"
+                    }
+                  }
+                },
+                "config_version": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "ui_x": {
+                  "type": "number"
+                },
+                "ui_y": {
+                  "type": "number"
+                },
+                "group": {
+                  "type": [
+                    "integer",
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "config"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
+                },
+                "kind": {
+                  "const": "json_parse"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "client_id": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "config": {
+                  "type": "object",
+                  "required": [
+                    "source"
+                  ],
+                  "properties": {
+                    "source": {
+                      "type": [
+                        "string",
+                        "object",
+                        "array"
+                      ],
+                      "description": "\u041f\u043e\u043b\u0435 \u0441 JSON \u0441\u0442\u0440\u043e\u043a\u043e\u0439 ${llm_output}",
+                      "default": ""
+                    },
+                    "output_field": {
+                      "type": "string",
+                      "default": "json_data"
+                    },
+                    "fields": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "maxItems": 256,
+                      "default": []
+                    }
+                  }
+                },
+                "config_version": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "ui_x": {
+                  "type": "number"
+                },
+                "ui_y": {
+                  "type": "number"
+                },
+                "group": {
+                  "type": [
+                    "integer",
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "config"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
+                },
+                "kind": {
+                  "const": "list_to_text"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "client_id": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "config": {
+                  "type": "object",
+                  "required": [
+                    "array_source"
+                  ],
+                  "properties": {
+                    "array_source": {
+                      "type": "string",
+                      "description": "\u041f\u0443\u0442\u044c \u043a \u043c\u0430\u0441\u0441\u0438\u0432\u0443 ${table_result.rows}",
+                      "minLength": 1,
+                      "pattern": "\\S",
+                      "default": ""
+                    },
+                    "item_template": {
+                      "type": "string",
+                      "description": "\u0428\u0430\u0431\u043b\u043e\u043d \u0434\u043b\u044f \u043a\u0430\u0436\u0434\u043e\u0433\u043e \u044d\u043b\u0435\u043c\u0435\u043d\u0442\u0430 ${item.name}",
+                      "default": ""
+                    },
+                    "separator": {
+                      "type": "string",
+                      "default": "\n",
+                      "description": "\u0420\u0430\u0437\u0434\u0435\u043b\u0438\u0442\u0435\u043b\u044c \u043c\u0435\u0436\u0434\u0443 \u044d\u043b\u0435\u043c\u0435\u043d\u0442\u0430\u043c\u0438"
+                    },
+                    "output_field": {
+                      "type": "string",
+                      "default": "list_text"
+                    },
+                    "max_items": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10000
+                    },
+                    "max_chars": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 200000
+                    },
+                    "keep": {
+                      "type": "string",
+                      "enum": [
+                        "first",
+                        "last"
+                      ]
+                    }
+                  }
+                },
+                "config_version": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "ui_x": {
+                  "type": "number"
+                },
+                "ui_y": {
+                  "type": "number"
+                },
+                "group": {
+                  "type": [
+                    "integer",
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "config"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
+                },
+                "kind": {
+                  "const": "llm"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "client_id": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "config": {
+                  "type": "object",
+                  "required": [],
+                  "properties": {
+                    "provider": {
+                      "type": "string",
+                      "enum": [
+                        "openrouter",
+                        "openai"
+                      ],
+                      "default": "openrouter",
+                      "description": "\u041f\u0440\u043e\u0432\u0430\u0439\u0434\u0435\u0440 LLM; \u043e\u0431\u044b\u0447\u043d\u043e \u043e\u043f\u0440\u0435\u0434\u0435\u043b\u044f\u0435\u0442\u0441\u044f \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u043c credential"
+                    },
+                    "credential_id": {
+                      "type": [
+                        "integer",
+                        "string"
+                      ],
+                      "description": "ID \u043b\u0438\u0447\u043d\u043e\u0433\u043e credential \u0438\u043b\u0438 managed \u0434\u043b\u044f \u043a\u043b\u044e\u0447\u0430 \u043f\u043e\u0434\u043f\u0438\u0441\u043a\u0438",
+                      "default": ""
+                    },
+                    "prompt": {
+                      "type": "string",
+                      "description": "\u041f\u0440\u043e\u043c\u043f\u0442 \u0434\u043b\u044f \u043c\u043e\u0434\u0435\u043b\u0438 (\u043f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442 \u043f\u043b\u0435\u0439\u0441\u0445\u043e\u043b\u0434\u0435\u0440\u044b)",
+                      "default": ""
+                    },
+                    "model": {
+                      "type": "string",
+                      "examples": [
+                        "openai/gpt-4o-mini",
+                        "openrouter/free",
+                        "anthropic/claude-sonnet-4",
+                        "gpt-4o-mini"
+                      ],
+                      "default": "openai/gpt-4o-mini",
+                      "description": "\u041d\u0430\u0434\u0451\u0436\u043d\u044b\u0439 \u0434\u0435\u0448\u0451\u0432\u044b\u0439 default \u2014 openai/gpt-4o-mini. openrouter/free \u0431\u0435\u0441\u043f\u043b\u0430\u0442\u043d\u044b\u0439, \u043d\u043e \u044d\u043a\u0441\u043f\u0435\u0440\u0438\u043c\u0435\u043d\u0442\u0430\u043b\u044c\u043d\u044b\u0439 \u0438 \u043c\u043e\u0436\u0435\u0442 \u043d\u0435 \u0432\u0435\u0440\u043d\u0443\u0442\u044c \u043e\u0442\u0432\u0435\u0442."
+                    },
+                    "temperature": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 2,
+                      "default": 0.7,
+                      "description": "\u041a\u0440\u0435\u0430\u0442\u0438\u0432\u043d\u043e\u0441\u0442\u044c \u043c\u043e\u0434\u0435\u043b\u0438"
+                    },
+                    "max_tokens": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "minimum": 1,
+                      "default": 512
+                    },
+                    "output_field": {
+                      "type": "string",
+                      "default": "llm_output",
+                      "description": "\u041a\u043b\u044e\u0447 \u0432 \u043a\u043e\u043d\u0442\u0435\u043a\u0441\u0442\u0435 \u0434\u043b\u044f \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442\u0430"
+                    },
+                    "system_prompt": {
+                      "type": "string",
+                      "description": "Legacy prompt alias; used when prompt is empty."
+                    },
+                    "typing_indicator": {
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "max_output_tokens": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "minimum": 1,
+                      "description": "Legacy max_tokens alias."
+                    },
+                    "api_key": {
+                      "type": "string",
+                      "description": "Writer-only credential input; never serialized to the editor."
+                    }
+                  }
+                },
+                "config_version": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "ui_x": {
+                  "type": "number"
+                },
+                "ui_y": {
+                  "type": "number"
+                },
+                "group": {
+                  "type": [
+                    "integer",
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "config"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
+                },
+                "kind": {
+                  "const": "math"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "client_id": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "config": {
+                  "type": "object",
+                  "required": [],
+                  "properties": {
+                    "left": {
+                      "type": [
+                        "string",
+                        "number"
+                      ],
+                      "default": "0"
+                    },
+                    "operation": {
+                      "enum": [
+                        "add",
+                        "subtract",
+                        "multiply",
+                        "divide",
+                        "modulo",
+                        "min",
+                        "max"
+                      ],
+                      "default": "add"
+                    },
+                    "right": {
+                      "type": [
+                        "string",
+                        "number"
+                      ],
+                      "default": "0"
+                    },
+                    "precision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10,
+                      "default": 2
+                    },
+                    "output_field": {
+                      "type": "string",
+                      "default": "math_result"
+                    }
+                  }
+                },
+                "config_version": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "ui_x": {
+                  "type": "number"
+                },
+                "ui_y": {
+                  "type": "number"
+                },
+                "group": {
+                  "type": [
+                    "integer",
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "config"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
+                },
+                "kind": {
+                  "const": "output"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "client_id": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "config": {
+                  "type": "object",
+                  "required": [],
+                  "properties": {
+                    "mode": {
+                      "enum": [
+                        "send",
+                        "reply",
+                        "edit",
+                        "react",
+                        "poll",
+                        "pin",
+                        "copy",
+                        "text",
+                        "",
+                        null
+                      ],
+                      "default": "send",
+                      "description": "\u0420\u0435\u0436\u0438\u043c \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044f: send \u2014 \u043e\u0442\u043f\u0440\u0430\u0432\u0438\u0442\u044c \u0442\u0435\u043a\u0441\u0442; reply \u2014 \u043e\u0442\u0432\u0435\u0442\u0438\u0442\u044c \u043d\u0430 \u043a\u043e\u043d\u043a\u0440\u0435\u0442\u043d\u043e\u0435 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435; edit \u2014 \u0438\u0437\u043c\u0435\u043d\u0438\u0442\u044c \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435; react \u2014 \u043f\u043e\u0441\u0442\u0430\u0432\u0438\u0442\u044c \u0440\u0435\u0430\u043a\u0446\u0438\u044e; poll \u2014 \u0441\u043e\u0437\u0434\u0430\u0442\u044c \u043e\u043f\u0440\u043e\u0441; pin \u2014 \u0437\u0430\u043a\u0440\u0435\u043f\u0438\u0442\u044c; copy \u2014 \u0441\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u0438\u0441\u0445\u043e\u0434\u043d\u043e\u0435 Telegram-\u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435 \u0432 \u0434\u0440\u0443\u0433\u043e\u0439 \u0447\u0430\u0442 \u0431\u0435\u0437 \u0441\u0441\u044b\u043b\u043a\u0438 \u043d\u0430 \u0430\u0432\u0442\u043e\u0440\u0430. \u0414\u043b\u044f \u043f\u0440\u043e\u0438\u0437\u0432\u043e\u043b\u044c\u043d\u043e\u0433\u043e \u0442\u0435\u043a\u0441\u0442\u0430 \u043e\u0431\u044b\u0447\u043d\u043e \u0438\u0441\u043f\u043e\u043b\u044c\u0437\u0443\u0439 send. \u041e\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u044e\u0449\u0438\u0439 mode \u0438 \u0441\u0442\u0430\u0440\u044b\u0439 text \u0432\u044b\u043f\u043e\u043b\u043d\u044f\u044e\u0442\u0441\u044f \u043a\u0430\u043a reply."
+                    },
+                    "static_text": {
+                      "type": "string",
+                      "description": "\u0422\u0435\u043a\u0441\u0442 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u044f (\u043f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442 \u043f\u043b\u0435\u0439\u0441\u0445\u043e\u043b\u0434\u0435\u0440\u044b)",
+                      "default": ""
+                    },
+                    "reply_to_message_id": {
+                      "type": [
+                        "string",
+                        "integer",
+                        "null"
+                      ],
+                      "description": "ID \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u044f \u0434\u043b\u044f reply"
+                    },
+                    "edit_message_id": {
+                      "type": [
+                        "string",
+                        "integer",
+                        "null"
+                      ],
+                      "description": "ID \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u044f \u0434\u043b\u044f \u0440\u0435\u0434\u0430\u043a\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f"
+                    },
+                    "target_chat_id": {
+                      "type": [
+                        "string",
+                        "integer",
+                        "null"
+                      ],
+                      "description": "ID \u0447\u0430\u0442\u0430 \u043d\u0430\u0437\u043d\u0430\u0447\u0435\u043d\u0438\u044f (\u0434\u043b\u044f send/edit/react/poll/pin/copy; \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442 \u043f\u043b\u0435\u0439\u0441\u0445\u043e\u043b\u0434\u0435\u0440\u044b)"
+                    },
+                    "source_chat_id": {
+                      "type": [
+                        "string",
+                        "integer",
+                        "null"
+                      ],
+                      "default": "${chat.id}",
+                      "description": "\u0418\u0441\u0445\u043e\u0434\u043d\u044b\u0439 Telegram chat_id \u0434\u043b\u044f mode=copy"
+                    },
+                    "copy_message_id": {
+                      "type": [
+                        "string",
+                        "integer",
+                        "null"
+                      ],
+                      "default": "${message.message_id}",
+                      "description": "\u0418\u0441\u0445\u043e\u0434\u043d\u044b\u0439 Telegram message_id \u0434\u043b\u044f mode=copy"
+                    },
+                    "protect_content": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "\u0417\u0430\u043f\u0440\u0435\u0442\u0438\u0442\u044c \u0441\u043e\u0445\u0440\u0430\u043d\u0435\u043d\u0438\u0435 \u0438 \u0434\u0430\u043b\u044c\u043d\u0435\u0439\u0448\u0443\u044e \u043f\u0435\u0440\u0435\u0441\u044b\u043b\u043a\u0443 \u0441\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u043d\u043d\u043e\u0433\u043e \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u044f (mode=copy)"
+                    },
+                    "pin_message_id": {
+                      "type": [
+                        "string",
+                        "integer",
+                        "null"
+                      ],
+                      "default": "${message.message_id}",
+                      "description": "Telegram message_id \u0434\u043b\u044f mode=pin"
+                    },
+                    "pin_disable_notification": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "\u0417\u0430\u043a\u0440\u0435\u043f\u0438\u0442\u044c \u0431\u0435\u0437 \u0443\u0432\u0435\u0434\u043e\u043c\u043b\u0435\u043d\u0438\u044f (mode=pin)"
+                    },
+                    "parse_mode": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "enum": [
+                        "HTML",
+                        "",
+                        null
+                      ],
+                      "default": "HTML",
+                      "description": "\u0424\u043e\u0440\u043c\u0430\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435 \u0442\u0435\u043a\u0441\u0442\u0430; runtime \u0438\u0441\u043f\u043e\u043b\u044c\u0437\u0443\u0435\u0442 Telegram HTML"
+                    },
+                    "poll_question": {
+                      "type": "string",
+                      "description": "\u0412\u043e\u043f\u0440\u043e\u0441 \u043e\u043f\u0440\u043e\u0441\u0430 (mode=poll, \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442 \u043f\u043b\u0435\u0439\u0441\u0445\u043e\u043b\u0434\u0435\u0440\u044b)"
+                    },
+                    "poll_options": {
+                      "type": "array",
+                      "description": "\u0421\u0442\u0430\u0442\u0438\u0447\u0435\u0441\u043a\u0438\u0435 \u0432\u0430\u0440\u0438\u0430\u043d\u0442\u044b \u043e\u0442\u0432\u0435\u0442\u0430 \u0434\u043b\u044f \u043e\u043f\u0440\u043e\u0441\u0430 (mode=poll, 1-12 \u0441\u0442\u0440\u043e\u043a \u043f\u043e 1-100 \u0441\u0438\u043c\u0432\u043e\u043b\u043e\u0432)",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "poll_options_list_enabled": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "\u0413\u0435\u043d\u0435\u0440\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u0432\u0430\u0440\u0438\u0430\u043d\u0442\u044b \u043e\u043f\u0440\u043e\u0441\u0430 \u0438\u0437 \u0441\u043f\u0438\u0441\u043a\u0430 (mode=poll)"
+                    },
+                    "poll_options_source": {
+                      "type": "string",
+                      "description": "\u041f\u0443\u0442\u044c \u043a \u043c\u0430\u0441\u0441\u0438\u0432\u0443 \u0434\u043b\u044f \u0432\u0430\u0440\u0438\u0430\u043d\u0442\u043e\u0432 \u043e\u043f\u0440\u043e\u0441\u0430 (mode=poll), \u043d\u0430\u043f\u0440\u0438\u043c\u0435\u0440 ${table_result.rows}"
+                    },
+                    "poll_options_template": {
+                      "type": "string",
+                      "description": "\u0428\u0430\u0431\u043b\u043e\u043d \u0432\u0430\u0440\u0438\u0430\u043d\u0442\u0430 \u0438\u0437 \u044d\u043b\u0435\u043c\u0435\u043d\u0442\u0430 \u0441\u043f\u0438\u0441\u043a\u0430 (mode=poll), \u043d\u0430\u043f\u0440\u0438\u043c\u0435\u0440 ${item.name}"
+                    },
+                    "poll_is_anonymous": {
+                      "type": "boolean",
+                      "default": true,
+                      "description": "\u0410\u043d\u043e\u043d\u0438\u043c\u043d\u044b\u0439 \u043e\u043f\u0440\u043e\u0441 (mode=poll)"
+                    },
+                    "poll_type": {
+                      "type": "string",
+                      "enum": [
+                        "regular",
+                        "quiz"
+                      ],
+                      "default": "regular",
+                      "description": "\u0422\u0438\u043f \u043e\u043f\u0440\u043e\u0441\u0430 (mode=poll)"
+                    },
+                    "poll_allows_multiple": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "\u0420\u0430\u0437\u0440\u0435\u0448\u0438\u0442\u044c \u043c\u043d\u043e\u0436\u0435\u0441\u0442\u0432\u0435\u043d\u043d\u044b\u0439 \u0432\u044b\u0431\u043e\u0440 \u0432 \u043e\u043f\u0440\u043e\u0441\u0435 (mode=poll)"
+                    },
+                    "poll_allows_revoting": {
+                      "type": "boolean",
+                      "description": "\u0420\u0430\u0437\u0440\u0435\u0448\u0438\u0442\u044c \u043c\u0435\u043d\u044f\u0442\u044c \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0435 \u0432\u0430\u0440\u0438\u0430\u043d\u0442\u044b"
+                    },
+                    "poll_shuffle_options": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "\u041f\u0435\u0440\u0435\u043c\u0435\u0448\u0430\u0442\u044c \u0432\u0430\u0440\u0438\u0430\u043d\u0442\u044b \u043e\u0442\u0432\u0435\u0442\u0430 \u0434\u043b\u044f \u043a\u0430\u0436\u0434\u043e\u0433\u043e \u0443\u0447\u0430\u0441\u0442\u043d\u0438\u043a\u0430"
+                    },
+                    "poll_allow_adding_options": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "\u0420\u0430\u0437\u0440\u0435\u0448\u0438\u0442\u044c \u0443\u0447\u0430\u0441\u0442\u043d\u0438\u043a\u0430\u043c \u0434\u043e\u0431\u0430\u0432\u043b\u044f\u0442\u044c \u0432\u0430\u0440\u0438\u0430\u043d\u0442\u044b; \u0442\u043e\u043b\u044c\u043a\u043e \u0434\u043b\u044f \u043d\u0435\u0430\u043d\u043e\u043d\u0438\u043c\u043d\u043e\u0433\u043e \u043e\u0431\u044b\u0447\u043d\u043e\u0433\u043e \u043e\u043f\u0440\u043e\u0441\u0430"
+                    },
+                    "poll_hide_results_until_closes": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "\u041d\u0435 \u043f\u043e\u043a\u0430\u0437\u044b\u0432\u0430\u0442\u044c \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442\u044b \u0434\u043e \u0437\u0430\u043a\u0440\u044b\u0442\u0438\u044f \u043e\u043f\u0440\u043e\u0441\u0430"
+                    },
+                    "poll_correct_option_ids": {
+                      "type": [
+                        "array",
+                        "string"
+                      ],
+                      "description": "\u041e\u0442\u0441\u043e\u0440\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u043d\u044b\u0435 \u0438\u043d\u0434\u0435\u043a\u0441\u044b \u043f\u0440\u0430\u0432\u0438\u043b\u044c\u043d\u044b\u0445 \u0432\u0430\u0440\u0438\u0430\u043d\u0442\u043e\u0432 \u0441 0; \u043e\u0431\u044f\u0437\u0430\u0442\u0435\u043b\u044c\u043d\u044b \u0434\u043b\u044f quiz",
+                      "items": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 11
+                      }
+                    },
+                    "poll_explanation": {
+                      "type": "string",
+                      "description": "\u041f\u043e\u044f\u0441\u043d\u0435\u043d\u0438\u0435 \u043d\u0435\u043f\u0440\u0430\u0432\u0438\u043b\u044c\u043d\u043e\u0433\u043e \u043e\u0442\u0432\u0435\u0442\u0430 \u0432 quiz"
+                    },
+                    "poll_open_period": {
+                      "type": [
+                        "integer",
+                        "string",
+                        "null"
+                      ],
+                      "minimum": 5,
+                      "maximum": 2628000,
+                      "description": "\u0421\u043a\u043e\u043b\u044c\u043a\u043e \u0441\u0435\u043a\u0443\u043d\u0434 \u043e\u043f\u0440\u043e\u0441 \u043e\u0441\u0442\u0430\u0451\u0442\u0441\u044f \u043e\u0442\u043a\u0440\u044b\u0442\u044b\u043c; \u043d\u0435\u0441\u043e\u0432\u043c\u0435\u0441\u0442\u0438\u043c\u043e \u0441 poll_close_date"
+                    },
+                    "poll_close_date": {
+                      "type": [
+                        "integer",
+                        "string",
+                        "null"
+                      ],
+                      "description": "Unix timestamp \u0437\u0430\u043a\u0440\u044b\u0442\u0438\u044f; \u0434\u043e\u043b\u0436\u0435\u043d \u0431\u044b\u0442\u044c \u043d\u0430 5-2628000 \u0441\u0435\u043a\u0443\u043d\u0434 \u0432 \u0431\u0443\u0434\u0443\u0449\u0435\u043c"
+                    },
+                    "poll_is_closed": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "\u041e\u0442\u043f\u0440\u0430\u0432\u0438\u0442\u044c \u043e\u043f\u0440\u043e\u0441 \u0443\u0436\u0435 \u0437\u0430\u043a\u0440\u044b\u0442\u044b\u043c, \u043d\u0430\u043f\u0440\u0438\u043c\u0435\u0440 \u0434\u043b\u044f \u043f\u0440\u0435\u0434\u043f\u0440\u043e\u0441\u043c\u043e\u0442\u0440\u0430"
+                    },
+                    "poll_description": {
+                      "type": "string",
+                      "maxLength": 1024,
+                      "description": "\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435 \u043e\u043f\u0440\u043e\u0441\u0430"
+                    },
+                    "poll_members_only": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "\u0420\u0430\u0437\u0440\u0435\u0448\u0438\u0442\u044c \u0433\u043e\u043b\u043e\u0441\u043e\u0432\u0430\u0442\u044c \u0442\u043e\u043b\u044c\u043a\u043e \u0443\u0447\u0430\u0441\u0442\u043d\u0438\u043a\u0430\u043c \u043a\u0430\u043d\u0430\u043b\u0430 \u0441\u0442\u0430\u0440\u0448\u0435 24 \u0447\u0430\u0441\u043e\u0432"
+                    },
+                    "poll_country_codes": {
+                      "type": [
+                        "array",
+                        "string"
+                      ],
+                      "description": "\u0414\u043e 12 \u0434\u0432\u0443\u0445\u0431\u0443\u043a\u0432\u0435\u043d\u043d\u044b\u0445 \u043a\u043e\u0434\u043e\u0432 \u0441\u0442\u0440\u0430\u043d; \u043e\u0433\u0440\u0430\u043d\u0438\u0447\u0435\u043d\u0438\u0435 \u0434\u043e\u0441\u0442\u0443\u043f\u043d\u043e \u0442\u043e\u043b\u044c\u043a\u043e \u0434\u043b\u044f \u043a\u0430\u043d\u0430\u043b\u043e\u0432"
+                    },
+                    "poll_disable_notification": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "\u041e\u0442\u043f\u0440\u0430\u0432\u0438\u0442\u044c \u043e\u043f\u0440\u043e\u0441 \u0431\u0435\u0437 \u0437\u0432\u0443\u043a\u0430"
+                    },
+                    "poll_protect_content": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "\u0417\u0430\u043f\u0440\u0435\u0442\u0438\u0442\u044c \u0441\u043e\u0445\u0440\u0430\u043d\u0435\u043d\u0438\u0435 \u0438 \u043f\u0435\u0440\u0435\u0441\u044b\u043b\u043a\u0443 \u043e\u043f\u0440\u043e\u0441\u0430"
+                    },
+                    "reaction_emoji": {
+                      "type": "string",
+                      "description": "Emoji \u0434\u043b\u044f \u0440\u0435\u0430\u043a\u0446\u0438\u0438 (mode=react; \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442 \u043f\u043b\u0435\u0439\u0441\u0445\u043e\u043b\u0434\u0435\u0440\u044b, \u043d\u0430\u043f\u0440\u0438\u043c\u0435\u0440 ${reaction.new_emoji})"
+                    },
+                    "reaction_message_id": {
+                      "type": [
+                        "string",
+                        "integer",
+                        "null"
+                      ],
+                      "default": "${message.message_id}",
+                      "description": "Telegram message_id \u043d\u0430\u0437\u043d\u0430\u0447\u0435\u043d\u0438\u044f \u0434\u043b\u044f mode=react; \u043c\u043e\u0436\u0435\u0442 \u0443\u043a\u0430\u0437\u044b\u0432\u0430\u0442\u044c \u043d\u0430 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435 \u0432 target_chat_id"
+                    },
+                    "remove_reaction": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "\u0423\u0434\u0430\u043b\u0438\u0442\u044c \u0440\u0430\u043d\u0435\u0435 \u043f\u043e\u0441\u0442\u0430\u0432\u043b\u0435\u043d\u043d\u0443\u044e \u0431\u043e\u0442\u043e\u043c \u0440\u0435\u0430\u043a\u0446\u0438\u044e \u0432\u043c\u0435\u0441\u0442\u043e \u0443\u0441\u0442\u0430\u043d\u043e\u0432\u043a\u0438 \u043d\u043e\u0432\u043e\u0439 (mode=react)"
+                    },
+                    "buttons": {
+                      "type": "array",
+                      "description": "\u041a\u043d\u043e\u043f\u043a\u0438 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u044f; \u0441\u043f\u043e\u0441\u043e\u0431 \u0440\u0430\u0437\u043c\u0435\u0449\u0435\u043d\u0438\u044f \u043e\u043f\u0440\u0435\u0434\u0435\u043b\u044f\u0435\u0442\u0441\u044f \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u043c \u043c\u0435\u0441\u0441\u0435\u043d\u0434\u0436\u0435\u0440\u043e\u043c",
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "text": {
+                              "type": "string",
+                              "minLength": 1,
+                              "pattern": "\\S",
+                              "description": "\u0422\u0435\u043a\u0441\u0442 \u043a\u043d\u043e\u043f\u043a\u0438"
+                            },
+                            "type": {
+                              "enum": [
+                                "callback",
+                                "url"
+                              ],
+                              "default": "callback"
+                            },
+                            "value": {
+                              "type": "string",
+                              "minLength": 1,
+                              "pattern": "\\S",
+                              "description": "\u0417\u043d\u0430\u0447\u0435\u043d\u0438\u0435 \u043d\u0430\u0436\u0430\u0442\u0438\u044f \u0438\u043b\u0438 URL"
+                            }
+                          },
+                          "required": [
+                            "text",
+                            "value"
+                          ]
+                        }
+                      },
+                      "default": []
+                    },
+                    "buttons_list_enabled": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "\u0413\u0435\u043d\u0435\u0440\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u043a\u043d\u043e\u043f\u043a\u0438 \u0438\u0437 \u0441\u043f\u0438\u0441\u043a\u0430"
+                    },
+                    "buttons_list_source": {
+                      "type": "string",
+                      "description": "\u041f\u0443\u0442\u044c \u043a \u043c\u0430\u0441\u0441\u0438\u0432\u0443 \u0434\u043b\u044f \u043a\u043d\u043e\u043f\u043e\u043a ${table_result.rows}",
+                      "default": ""
+                    },
+                    "buttons_list_text_template": {
+                      "type": "string",
+                      "description": "\u0428\u0430\u0431\u043b\u043e\u043d \u0442\u0435\u043a\u0441\u0442\u0430 \u043a\u043d\u043e\u043f\u043a\u0438 ${item.name}",
+                      "default": ""
+                    },
+                    "buttons_list_value_template": {
+                      "type": "string",
+                      "description": "\u0428\u0430\u0431\u043b\u043e\u043d callback_data ${item.id}",
+                      "default": ""
+                    },
+                    "buttons_list_type": {
+                      "enum": [
+                        "callback",
+                        "url"
+                      ],
+                      "default": "callback"
+                    },
+                    "buttons_per_row": {
+                      "type": "integer",
+                      "default": 2,
+                      "minimum": 1,
+                      "maximum": 8
+                    },
+                    "output_field": {
+                      "type": "string",
+                      "default": "bot_action"
+                    },
+                    "clear_buttons": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "disable_preview": {
+                      "type": "boolean",
+                      "default": false
+                    }
+                  },
+                  "allOf": [
+                    {
+                      "if": {
+                        "required": [
+                          "buttons_list_enabled"
+                        ],
+                        "properties": {
+                          "buttons_list_enabled": {
+                            "const": true
+                          }
+                        }
+                      },
+                      "then": {
+                        "required": [
+                          "buttons_list_source",
+                          "buttons_list_text_template",
+                          "buttons_list_value_template"
+                        ],
+                        "properties": {
+                          "buttons_list_source": {
+                            "type": "string",
+                            "minLength": 1,
+                            "pattern": "\\S"
+                          },
+                          "buttons_list_text_template": {
+                            "type": "string",
+                            "minLength": 1,
+                            "pattern": "\\S"
+                          },
+                          "buttons_list_value_template": {
+                            "type": "string",
+                            "minLength": 1,
+                            "pattern": "\\S"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "if": {
+                        "required": [
+                          "mode"
+                        ],
+                        "properties": {
+                          "mode": {
+                            "const": "poll"
+                          }
+                        }
+                      },
+                      "then": {
+                        "required": [
+                          "poll_question"
+                        ],
+                        "properties": {
+                          "poll_question": {
+                            "type": "string",
+                            "minLength": 1,
+                            "pattern": "\\S"
+                          }
+                        },
+                        "allOf": [
+                          {
+                            "if": {
+                              "required": [
+                                "poll_options_list_enabled"
+                              ],
+                              "properties": {
+                                "poll_options_list_enabled": {
+                                  "const": true
+                                }
+                              }
+                            },
+                            "then": {
+                              "required": [
+                                "poll_options_source"
+                              ],
+                              "properties": {
+                                "poll_options_source": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "pattern": "\\S"
+                                }
+                              }
+                            },
+                            "else": {
+                              "required": [
+                                "poll_options"
+                              ],
+                              "properties": {
+                                "poll_options": {
+                                  "type": "array",
+                                  "minItems": 1,
+                                  "maxItems": 12,
+                                  "items": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "pattern": "\\S"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "config_version": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "ui_x": {
+                  "type": "number"
+                },
+                "ui_y": {
+                  "type": "number"
+                },
+                "group": {
+                  "type": [
+                    "integer",
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "config"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
+                },
+                "kind": {
+                  "const": "parameter"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "client_id": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "config": {
+                  "type": "object",
+                  "required": [
+                    "name"
+                  ],
+                  "properties": {
+                    "operation": {
+                      "enum": [
+                        "get",
+                        "set",
+                        "increment",
+                        "decrement"
+                      ],
+                      "description": "\u041e\u043f\u0435\u0440\u0430\u0446\u0438\u044f \u043d\u0430\u0434 \u043f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u043e\u043c",
+                      "default": "set"
+                    },
+                    "scope": {
+                      "enum": [
+                        "bot",
+                        "flow",
+                        "chat"
+                      ],
+                      "description": "\u0423\u0440\u043e\u0432\u0435\u043d\u044c \u043f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u0430",
+                      "default": "bot"
+                    },
+                    "value_type": {
+                      "enum": [
+                        "string",
+                        "float",
+                        "bool",
+                        "date"
+                      ],
+                      "default": "string",
+                      "description": "\u0422\u0438\u043f \u0445\u0440\u0430\u043d\u0438\u043c\u043e\u0433\u043e \u0437\u043d\u0430\u0447\u0435\u043d\u0438\u044f"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "\u0418\u043c\u044f \u043f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u0430",
+                      "minLength": 1,
+                      "pattern": "\\S",
+                      "maxLength": 128,
+                      "default": ""
+                    },
+                    "value": {
+                      "description": "JSON value or a string containing placeholders.",
+                      "default": ""
+                    },
+                    "delta": {
+                      "type": [
+                        "string",
+                        "number",
+                        "null"
+                      ],
+                      "description": "\u0428\u0430\u0433 \u0434\u043b\u044f increment/decrement; \u0435\u0441\u043b\u0438 \u043d\u0435 \u0437\u0430\u0434\u0430\u043d, \u0438\u0441\u043f\u043e\u043b\u044c\u0437\u0443\u0435\u0442\u0441\u044f value"
+                    },
+                    "output_field": {
+                      "type": "string",
+                      "default": "parameter_value"
+                    }
+                  }
+                },
+                "config_version": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "ui_x": {
+                  "type": "number"
+                },
+                "ui_y": {
+                  "type": "number"
+                },
+                "group": {
+                  "type": [
+                    "integer",
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "config"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
+                },
+                "kind": {
+                  "const": "prompt_builder"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "client_id": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "config": {
+                  "type": "object",
+                  "required": [
+                    "template"
+                  ],
+                  "properties": {
+                    "template": {
+                      "type": "string",
+                      "description": "\u0428\u0430\u0431\u043b\u043e\u043d \u0442\u0435\u043a\u0441\u0442\u0430 (\u043f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442 \u043f\u043b\u0435\u0439\u0441\u0445\u043e\u043b\u0434\u0435\u0440\u044b)",
+                      "default": ""
+                    },
+                    "output_field": {
+                      "type": "string",
+                      "default": "prompt_text"
+                    }
+                  }
+                },
+                "config_version": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "ui_x": {
+                  "type": "number"
+                },
+                "ui_y": {
+                  "type": "number"
+                },
+                "group": {
+                  "type": [
+                    "integer",
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "config"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
+                },
+                "kind": {
+                  "const": "provider_branch"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "client_id": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "config": {
+                  "type": "object",
+                  "required": [
+                    "providers"
+                  ],
+                  "properties": {
+                    "providers": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "pattern": "^[a-z][a-z0-9_]{0,31}$(?![\\s\\S])"
+                      },
+                      "uniqueItems": true,
+                      "maxItems": 32,
+                      "default": []
+                    }
+                  }
+                },
+                "config_version": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "ui_x": {
+                  "type": "number"
+                },
+                "ui_y": {
+                  "type": "number"
+                },
+                "group": {
+                  "type": [
+                    "integer",
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "config"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
+                },
+                "kind": {
+                  "const": "random_choice"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "client_id": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "config": {
+                  "type": "object",
+                  "required": [
+                    "array_source"
+                  ],
+                  "properties": {
+                    "array_source": {
+                      "type": "string",
+                      "description": "\u041f\u0443\u0442\u044c \u043a \u043c\u0430\u0441\u0441\u0438\u0432\u0443 (\u043d\u0430\u043f\u0440\u0438\u043c\u0435\u0440 chat_history \u0438\u043b\u0438 table_result.rows)",
+                      "minLength": 1,
+                      "pattern": "\\S",
+                      "default": ""
+                    },
+                    "output_field": {
+                      "type": "string",
+                      "default": "random_item",
+                      "description": "\u041a\u043b\u044e\u0447 \u0432 \u043a\u043e\u043d\u0442\u0435\u043a\u0441\u0442\u0435 \u0434\u043b\u044f \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u043e\u0433\u043e \u044d\u043b\u0435\u043c\u0435\u043d\u0442\u0430"
+                    }
+                  }
+                },
+                "config_version": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "ui_x": {
+                  "type": "number"
+                },
+                "ui_y": {
+                  "type": "number"
+                },
+                "group": {
+                  "type": [
+                    "integer",
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "config"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
+                },
+                "kind": {
+                  "const": "reminder"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "client_id": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "config": {
+                  "type": "object",
+                  "required": [],
+                  "properties": {
+                    "action": {
+                      "enum": [
+                        "schedule",
+                        "list",
+                        "cancel",
+                        "cancel_all"
+                      ],
+                      "default": "schedule",
+                      "description": "schedule \u2014 \u0441\u043e\u0437\u0434\u0430\u0442\u044c \u0443\u0432\u0435\u0434\u043e\u043c\u043b\u0435\u043d\u0438\u0435; list \u2014 \u043f\u043e\u043b\u0443\u0447\u0438\u0442\u044c \u0431\u0443\u0434\u0443\u0449\u0438\u0435 \u043d\u0430\u043f\u043e\u043c\u0438\u043d\u0430\u043d\u0438\u044f \u0442\u0435\u043a\u0443\u0449\u0435\u0433\u043e \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f; cancel \u2014 \u043e\u0442\u043c\u0435\u043d\u0438\u0442\u044c \u043e\u0434\u043d\u043e \u043f\u043e reminder_id; cancel_all \u2014 \u043e\u0442\u043c\u0435\u043d\u0438\u0442\u044c \u0432\u0441\u0435 \u0431\u0443\u0434\u0443\u0449\u0438\u0435 \u043d\u0430\u043f\u043e\u043c\u0438\u043d\u0430\u043d\u0438\u044f \u0442\u0435\u043a\u0443\u0449\u0435\u0433\u043e \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f."
+                    },
+                    "remind_at": {
+                      "type": [
+                        "string",
+                        "integer",
+                        "null"
+                      ],
+                      "description": "\u0414\u0430\u0442\u0430 \u0438 \u0432\u0440\u0435\u043c\u044f \u0432 ISO-8601 \u0438\u043b\u0438 Unix timestamp; \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442 \u043f\u043b\u0435\u0439\u0441\u0445\u043e\u043b\u0434\u0435\u0440\u044b. \u041d\u0430\u0438\u0432\u043d\u0430\u044f \u0434\u0430\u0442\u0430 \u0442\u0440\u0430\u043a\u0442\u0443\u0435\u0442\u0441\u044f \u0432 timezone, \u043d\u0430\u043f\u0440\u0438\u043c\u0435\u0440 ${meeting.starts_at}.",
+                      "default": ""
+                    },
+                    "timezone": {
+                      "type": "string",
+                      "default": "UTC",
+                      "description": "IANA timezone, \u043d\u0430\u043f\u0440\u0438\u043c\u0435\u0440 Europe/Moscow. \u0418\u0441\u043f\u043e\u043b\u044c\u0437\u0443\u0435\u0442\u0441\u044f \u0442\u043e\u043b\u044c\u043a\u043e \u043a\u043e\u0433\u0434\u0430 remind_at \u043d\u0435 \u0441\u043e\u0434\u0435\u0440\u0436\u0438\u0442 \u0441\u043c\u0435\u0449\u0435\u043d\u0438\u0435."
+                    },
+                    "target_chat_id": {
+                      "type": [
+                        "string",
+                        "integer",
+                        "null"
+                      ],
+                      "default": "${chat.id}",
+                      "description": "\u0427\u0430\u0442 \u043d\u0430\u0437\u043d\u0430\u0447\u0435\u043d\u0438\u044f. \u041c\u043e\u0436\u043d\u043e \u0438\u0441\u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u044c \u0442\u0435\u043a\u0443\u0449\u0438\u0439 \u0447\u0430\u0442, ${callback.from_user_id} \u0434\u043b\u044f \u043b\u0438\u0447\u043d\u043e\u0433\u043e \u043d\u0430\u043f\u043e\u043c\u0438\u043d\u0430\u043d\u0438\u044f \u0438\u043b\u0438 \u0434\u0440\u0443\u0433\u043e\u0439 \u0443\u0436\u0435 \u0440\u0430\u0437\u0440\u0435\u0448\u0451\u043d\u043d\u044b\u0439 \u0447\u0430\u0442 \u044d\u0442\u043e\u0433\u043e \u0431\u043e\u0442\u0430."
+                    },
+                    "message_thread_id": {
+                      "type": [
+                        "string",
+                        "integer",
+                        "null"
+                      ],
+                      "description": "\u041d\u0435\u043e\u0431\u044f\u0437\u0430\u0442\u0435\u043b\u044c\u043d\u044b\u0439 ID \u0442\u0435\u043c\u044b \u0444\u043e\u0440\u0443\u043c\u0430 Telegram.",
+                      "default": ""
+                    },
+                    "text": {
+                      "type": "string",
+                      "description": "\u0422\u0435\u043a\u0441\u0442 \u0431\u0443\u0434\u0443\u0449\u0435\u0433\u043e \u0443\u0432\u0435\u0434\u043e\u043c\u043b\u0435\u043d\u0438\u044f, \u0434\u043e 4096 \u0441\u0438\u043c\u0432\u043e\u043b\u043e\u0432. \u041f\u043b\u0435\u0439\u0441\u0445\u043e\u043b\u0434\u0435\u0440\u044b \u0432\u044b\u0447\u0438\u0441\u043b\u044f\u044e\u0442\u0441\u044f \u043f\u0440\u0438 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u0438 \u0438 \u0441\u043e\u0445\u0440\u0430\u043d\u044f\u044e\u0442\u0441\u044f \u0432\u043c\u0435\u0441\u0442\u0435 \u0441 \u0437\u0430\u0434\u0430\u0447\u0435\u0439.",
+                      "default": ""
+                    },
+                    "parse_mode": {
+                      "enum": [
+                        "HTML",
+                        ""
+                      ],
+                      "default": "HTML"
+                    },
+                    "disable_notification": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "\u041e\u0442\u043f\u0440\u0430\u0432\u0438\u0442\u044c \u0431\u0435\u0437 \u0437\u0432\u0443\u043a\u0430."
+                    },
+                    "disable_web_page_preview": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "\u041d\u0435 \u043f\u043e\u043a\u0430\u0437\u044b\u0432\u0430\u0442\u044c \u043f\u0440\u0435\u0432\u044c\u044e \u0441\u0441\u044b\u043b\u043e\u043a."
+                    },
+                    "reminder_id": {
+                      "type": [
+                        "string",
+                        "integer",
+                        "null"
+                      ],
+                      "description": "ID \u0438\u0437 ${<output_field>.reminder.id} \u0438\u043b\u0438 \u0441\u043f\u0438\u0441\u043a\u0430 \u043d\u0430\u043f\u043e\u043c\u0438\u043d\u0430\u043d\u0438\u0439; \u043e\u0431\u044f\u0437\u0430\u0442\u0435\u043b\u0435\u043d \u0434\u043b\u044f cancel.",
+                      "default": ""
+                    },
+                    "idempotency_key": {
+                      "type": "string",
+                      "description": "\u041d\u0435\u043e\u0431\u044f\u0437\u0430\u0442\u0435\u043b\u044c\u043d\u044b\u0439 \u043a\u043b\u044e\u0447 \u0437\u0430\u0449\u0438\u0442\u044b \u043e\u0442 \u043f\u043e\u0432\u0442\u043e\u0440\u043d\u043e\u0433\u043e \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044f. \u0412\u043a\u043b\u044e\u0447\u0430\u0439\u0442\u0435 ID \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f/\u0441\u043e\u0431\u044b\u0442\u0438\u044f; \u0434\u043b\u044f Telegram callback runtime \u0430\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0447\u0435\u0441\u043a\u0438 \u0438\u0441\u043f\u043e\u043b\u044c\u0437\u0443\u0435\u0442 callback.id.",
+                      "default": ""
+                    },
+                    "output_field": {
+                      "type": "string",
+                      "default": "reminder_result"
+                    }
+                  },
+                  "allOf": [
+                    {
+                      "if": {
+                        "required": [
+                          "action"
+                        ],
+                        "properties": {
+                          "action": {
+                            "const": "cancel"
+                          }
+                        }
+                      },
+                      "then": {
+                        "required": [
+                          "reminder_id"
+                        ]
+                      }
+                    },
+                    {
+                      "if": {
+                        "properties": {
+                          "action": {
+                            "const": "schedule"
+                          }
+                        }
+                      },
+                      "then": {
+                        "required": [
+                          "remind_at",
+                          "text"
+                        ],
+                        "properties": {
+                          "text": {
+                            "type": "string",
+                            "minLength": 1,
+                            "pattern": "\\S"
+                          },
+                          "remind_at": {
+                            "type": [
+                              "string",
+                              "integer"
+                            ],
+                            "minLength": 1
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "config_version": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "ui_x": {
+                  "type": "number"
+                },
+                "ui_y": {
+                  "type": "number"
+                },
+                "group": {
+                  "type": [
+                    "integer",
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "config"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
+                },
+                "kind": {
+                  "const": "table"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "client_id": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "config": {
+                  "type": "object",
+                  "required": [
+                    "mode",
+                    "scope",
+                    "name"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "enum": [
+                        "insert",
+                        "update",
+                        "upsert",
+                        "delete",
+                        "select",
+                        "get"
+                      ],
+                      "description": "\u041e\u043f\u0435\u0440\u0430\u0446\u0438\u044f \u043d\u0430\u0434 \u0442\u0430\u0431\u043b\u0438\u0446\u0435\u0439",
+                      "default": "select"
+                    },
+                    "scope": {
+                      "type": "string",
+                      "enum": [
+                        "bot",
+                        "flow",
+                        "chat"
+                      ],
+                      "default": "bot",
+                      "description": "bot \u2014 \u043e\u0431\u0449\u0430\u044f \u0442\u0430\u0431\u043b\u0438\u0446\u0430 \u0434\u043b\u044f \u0432\u0441\u0435\u0445 \u0447\u0430\u0442\u043e\u0432; flow \u2014 \u0434\u043b\u044f \u043e\u0434\u043d\u043e\u0439 \u0441\u0445\u0435\u043c\u044b; chat \u2014 \u043e\u0442\u0434\u0435\u043b\u044c\u043d\u0430\u044f \u0434\u043b\u044f \u043a\u0430\u0436\u0434\u043e\u0433\u043e \u0447\u0430\u0442\u0430"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "\u0418\u043c\u044f \u0442\u0430\u0431\u043b\u0438\u0446\u044b, \u043d\u0430\u043f\u0440\u0438\u043c\u0435\u0440 roulette_members",
+                      "minLength": 1,
+                      "pattern": "\\S",
+                      "maxLength": 128,
+                      "default": ""
+                    },
+                    "filters": {
+                      "type": "array",
+                      "description": "\u0424\u0438\u043b\u044c\u0442\u0440\u044b \u0434\u043b\u044f select/update/upsert/delete",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "field": {
+                            "type": "string",
+                            "description": "\u0418\u043c\u044f \u043a\u043e\u043b\u043e\u043d\u043a\u0438"
+                          },
+                          "operator": {
+                            "enum": [
+                              "equals",
+                              "ne",
+                              "lt",
+                              "gt",
+                              "lte",
+                              "gte",
+                              "contains",
+                              "exists"
+                            ],
+                            "description": "\u041e\u043f\u0435\u0440\u0430\u0442\u043e\u0440 \u0441\u0440\u0430\u0432\u043d\u0435\u043d\u0438\u044f"
+                          },
+                          "value": {},
+                          "id": {
+                            "type": [
+                              "string",
+                              "integer"
+                            ],
+                            "maxLength": 128
+                          }
+                        },
+                        "required": [
+                          "field",
+                          "operator",
+                          "value"
+                        ]
+                      },
+                      "maxItems": 256,
+                      "default": []
+                    },
+                    "values": {
+                      "type": "array",
+                      "description": "\u041a\u043e\u043b\u043e\u043d\u043a\u0438 \u0438 \u0437\u043d\u0430\u0447\u0435\u043d\u0438\u044f \u0434\u043b\u044f insert/update/upsert (\u043f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u044e\u0442 \u043f\u043b\u0435\u0439\u0441\u0445\u043e\u043b\u0434\u0435\u0440\u044b)",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "column": {
+                            "type": "string"
+                          },
+                          "value": {},
+                          "id": {
+                            "type": [
+                              "string",
+                              "integer"
+                            ],
+                            "maxLength": 128
+                          }
+                        },
+                        "required": [
+                          "column",
+                          "value"
+                        ]
+                      },
+                      "maxItems": 256,
+                      "default": []
+                    },
+                    "row_id": {
+                      "type": [
+                        "string",
+                        "integer",
+                        "null"
+                      ],
+                      "description": "ID \u0441\u0442\u0440\u043e\u043a\u0438 \u0434\u043b\u044f mode=get",
+                      "default": ""
+                    },
+                    "limit": {
+                      "type": [
+                        "integer",
+                        "string",
+                        "null"
+                      ],
+                      "default": 20,
+                      "description": "\u041b\u0438\u043c\u0438\u0442 \u0434\u043b\u044f select"
+                    },
+                    "sort_field": {
+                      "type": "string",
+                      "description": "\u041a\u043e\u043b\u043e\u043d\u043a\u0430 \u0434\u043b\u044f \u0441\u043e\u0440\u0442\u0438\u0440\u043e\u0432\u043a\u0438",
+                      "default": "created_at"
+                    },
+                    "sort_order": {
+                      "enum": [
+                        "asc",
+                        "desc"
+                      ],
+                      "default": "desc"
+                    },
+                    "output_field": {
+                      "type": "string",
+                      "default": "table_result"
+                    }
+                  }
+                },
+                "config_version": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "ui_x": {
+                  "type": "number"
+                },
+                "ui_y": {
+                  "type": "number"
+                },
+                "group": {
+                  "type": [
+                    "integer",
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "config"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
+                },
+                "kind": {
+                  "const": "telegram_chat"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "client_id": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "config": {
+                  "type": "object",
+                  "required": [
+                    "action"
+                  ],
+                  "properties": {
+                    "action": {
+                      "enum": [
+                        "set_permissions",
+                        "export_invite_link",
+                        "create_invite_link",
+                        "edit_invite_link",
+                        "create_subscription_invite_link",
+                        "edit_subscription_invite_link",
+                        "revoke_invite_link",
+                        "set_photo",
+                        "delete_photo",
+                        "set_title",
+                        "set_description",
+                        "set_sticker_set",
+                        "delete_sticker_set",
+                        "get_chat",
+                        "get_administrators",
+                        "get_member_count",
+                        "leave_chat"
+                      ],
+                      "description": "\u041e\u043f\u0435\u0440\u0430\u0446\u0438\u044f \u043d\u0430\u0434 \u0432\u0441\u0435\u043c \u0447\u0430\u0442\u043e\u043c. \u0414\u043b\u044f \u0432\u0440\u0435\u043c\u0435\u043d\u043d\u043e\u0433\u043e lockdown \u0432\u044b\u043f\u043e\u043b\u043d\u0438\u0442\u0435 set_permissions=none, \u0437\u0430\u0442\u0435\u043c \u0447\u0435\u0440\u0435\u0437 delay/schedule \u0432\u0435\u0440\u043d\u0438\u0442\u0435 preset=all \u0438\u043b\u0438 \u0441\u043e\u0445\u0440\u0430\u043d\u0451\u043d\u043d\u044b\u0435 custom-\u043f\u0440\u0430\u0432\u0430.",
+                      "default": "set_permissions"
+                    },
+                    "chat_id": {
+                      "type": [
+                        "string",
+                        "integer",
+                        "null"
+                      ],
+                      "default": "${chat.id}",
+                      "description": "ID \u0438\u043b\u0438 @username \u0446\u0435\u043b\u0435\u0432\u043e\u0433\u043e \u0447\u0430\u0442\u0430"
+                    },
+                    "permissions_preset": {
+                      "enum": [
+                        "none",
+                        "all",
+                        "custom"
+                      ],
+                      "default": "none",
+                      "description": "\u041d\u0430\u0431\u043e\u0440 \u043e\u0431\u0449\u0438\u0445 \u043f\u0440\u0430\u0432 \u0443\u0447\u0430\u0441\u0442\u043d\u0438\u043a\u043e\u0432 \u0434\u043b\u044f set_permissions"
+                    },
+                    "use_independent_chat_permissions": {
+                      "default": true,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_send_messages": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_send_audios": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_send_documents": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_send_photos": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_send_videos": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_send_video_notes": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_send_voice_notes": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_send_polls": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_send_other_messages": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_add_web_page_previews": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_react_to_messages": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_edit_tag": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_change_info": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_invite_users": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_pin_messages": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_manage_topics": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "\u0418\u043c\u044f \u0434\u043e\u043f\u043e\u043b\u043d\u0438\u0442\u0435\u043b\u044c\u043d\u043e\u0439 \u0441\u0441\u044b\u043b\u043a\u0438 (0-32) \u0438\u043b\u0438 \u043f\u043e\u0434\u043f\u0438\u0441\u043d\u043e\u0439 \u0441\u0441\u044b\u043b\u043a\u0438"
+                    },
+                    "invite_link": {
+                      "type": "string",
+                      "description": "\u0421\u0441\u044b\u043b\u043a\u0430 \u0434\u043b\u044f edit/revoke"
+                    },
+                    "expire_date": {
+                      "type": "string",
+                      "description": "Unix timestamp \u043e\u043a\u043e\u043d\u0447\u0430\u043d\u0438\u044f \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044f \u0441\u0441\u044b\u043b\u043a\u0438"
+                    },
+                    "member_limit": {
+                      "anyOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 99999
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "creates_join_request": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "subscription_period": {
+                      "description": "\u0421\u0435\u0439\u0447\u0430\u0441 Telegram \u043f\u0440\u0438\u043d\u0438\u043c\u0430\u0435\u0442 \u0442\u043e\u043b\u044c\u043a\u043e 2592000 \u0441\u0435\u043a\u0443\u043d\u0434 (30 \u0434\u043d\u0435\u0439)",
+                      "default": 2592000,
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "subscription_price": {
+                      "description": "\u0426\u0435\u043d\u0430 \u043f\u043e\u0434\u043f\u0438\u0441\u043a\u0438 \u0432 Telegram Stars",
+                      "anyOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 10000
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "\u041d\u043e\u0432\u043e\u0435 \u043d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0447\u0430\u0442\u0430, 1-128 \u0441\u0438\u043c\u0432\u043e\u043b\u043e\u0432"
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "\u041d\u043e\u0432\u043e\u0435 \u043e\u043f\u0438\u0441\u0430\u043d\u0438\u0435, 0-255 \u0441\u0438\u043c\u0432\u043e\u043b\u043e\u0432; \u043f\u0443\u0441\u0442\u0430\u044f \u0441\u0442\u0440\u043e\u043a\u0430 \u043e\u0447\u0438\u0449\u0430\u0435\u0442"
+                    },
+                    "photo_file_id": {
+                      "type": [
+                        "string",
+                        "integer",
+                        "null"
+                      ],
+                      "default": "${message.photo_file_id}",
+                      "description": "Telegram file_id \u0444\u043e\u0442\u043e\u0433\u0440\u0430\u0444\u0438\u0438; runtime \u0431\u0435\u0437\u043e\u043f\u0430\u0441\u043d\u043e \u0441\u043a\u0430\u0447\u0438\u0432\u0430\u0435\u0442 \u0435\u0451 \u0447\u0435\u0440\u0435\u0437 Telegram \u0438 \u0437\u0430\u0433\u0440\u0443\u0436\u0430\u0435\u0442 \u043a\u0430\u043a InputFile"
+                    },
+                    "sticker_set_name": {
+                      "type": "string",
+                      "description": "\u0418\u043c\u044f \u043d\u0430\u0431\u043e\u0440\u0430 \u0441\u0442\u0438\u043a\u0435\u0440\u043e\u0432 \u0434\u043b\u044f supergroup"
+                    },
+                    "return_bots": {
+                      "description": "\u0412\u043a\u043b\u044e\u0447\u0438\u0442\u044c \u0431\u043e\u0442\u043e\u0432 \u0432 get_administrators",
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "output_field": {
+                      "type": "string",
+                      "default": "telegram_action"
+                    }
+                  }
+                },
+                "config_version": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "ui_x": {
+                  "type": "number"
+                },
+                "ui_y": {
+                  "type": "number"
+                },
+                "group": {
+                  "type": [
+                    "integer",
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "config"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
+                },
+                "kind": {
+                  "const": "telegram_member"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "client_id": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "config": {
+                  "type": "object",
+                  "required": [
+                    "action"
+                  ],
+                  "properties": {
+                    "action": {
+                      "enum": [
+                        "ban",
+                        "kick",
+                        "unban",
+                        "restrict",
+                        "promote",
+                        "demote",
+                        "set_admin_title",
+                        "set_member_tag",
+                        "ban_sender_chat",
+                        "unban_sender_chat",
+                        "approve_join_request",
+                        "decline_join_request",
+                        "answer_join_request_query",
+                        "send_join_request_web_app",
+                        "get_member",
+                        "get_user_boosts"
+                      ],
+                      "description": "\u041e\u043f\u0435\u0440\u0430\u0446\u0438\u044f \u0441 \u0443\u0447\u0430\u0441\u0442\u043d\u0438\u043a\u043e\u043c \u0438\u043b\u0438 \u0437\u0430\u044f\u0432\u043a\u043e\u0439. ban \u0443\u0434\u0430\u043b\u044f\u0435\u0442 \u0438 \u0437\u0430\u043f\u0440\u0435\u0449\u0430\u0435\u0442 \u043f\u043e\u0432\u0442\u043e\u0440\u043d\u044b\u0439 \u0432\u0445\u043e\u0434; kick \u0438\u0441\u043a\u043b\u044e\u0447\u0430\u0435\u0442, \u043d\u043e \u0440\u0430\u0437\u0440\u0435\u0448\u0430\u0435\u0442 \u0432\u043e\u0439\u0442\u0438 \u0441\u043d\u043e\u0432\u0430; restrict \u043c\u0435\u043d\u044f\u0435\u0442 \u043e\u0442\u0434\u0435\u043b\u044c\u043d\u044b\u0435 \u043f\u0440\u0430\u0432\u0430; demote \u0441\u043d\u0438\u043c\u0430\u0435\u0442 \u0432\u0441\u0435 \u0430\u0434\u043c\u0438\u043d\u0438\u0441\u0442\u0440\u0430\u0442\u043e\u0440\u0441\u043a\u0438\u0435 \u043f\u0440\u0430\u0432\u0430.",
+                      "default": "restrict"
+                    },
+                    "chat_id": {
+                      "type": [
+                        "string",
+                        "integer",
+                        "null"
+                      ],
+                      "default": "${chat.id}",
+                      "description": "ID \u0438\u043b\u0438 @username \u0446\u0435\u043b\u0435\u0432\u043e\u0433\u043e \u0447\u0430\u0442\u0430"
+                    },
+                    "user_id": {
+                      "type": [
+                        "string",
+                        "integer",
+                        "null"
+                      ],
+                      "default": "${message.from_user_id}",
+                      "description": "Telegram user_id; \u0434\u043b\u044f join_request \u043e\u0431\u044b\u0447\u043d\u043e ${join_request.user_id}"
+                    },
+                    "sender_chat_id": {
+                      "type": [
+                        "string",
+                        "integer",
+                        "null"
+                      ],
+                      "description": "ID \u043a\u0430\u043d\u0430\u043b\u0430-\u043e\u0442\u043f\u0440\u0430\u0432\u0438\u0442\u0435\u043b\u044f \u0434\u043b\u044f ban_sender_chat/unban_sender_chat"
+                    },
+                    "duration_seconds": {
+                      "description": "\u0421\u0440\u043e\u043a ban/restrict \u043e\u0442 \u043c\u043e\u043c\u0435\u043d\u0442\u0430 \u0432\u044b\u043f\u043e\u043b\u043d\u0435\u043d\u0438\u044f: 0 \u043d\u0430\u0432\u0441\u0435\u0433\u0434\u0430, \u0432\u0440\u0435\u043c\u0435\u043d\u043d\u044b\u0439 \u0441\u0440\u043e\u043a Telegram \u2014 \u043e\u0442 30 \u0441\u0435\u043a\u0443\u043d\u0434 \u0434\u043e 366 \u0434\u043d\u0435\u0439",
+                      "default": 0,
+                      "anyOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 31622400
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "until_date": {
+                      "type": "string",
+                      "description": "\u0410\u0431\u0441\u043e\u043b\u044e\u0442\u043d\u044b\u0439 Unix timestamp \u043e\u043a\u043e\u043d\u0447\u0430\u043d\u0438\u044f ban/restrict; duration_seconds \u0438\u043c\u0435\u0435\u0442 \u043f\u0440\u0438\u043e\u0440\u0438\u0442\u0435\u0442"
+                    },
+                    "revoke_messages": {
+                      "description": "\u0423\u0434\u0430\u043b\u0438\u0442\u044c \u0434\u043e\u0441\u0442\u0443\u043f\u043d\u044b\u0435 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u044f \u0438\u0441\u043a\u043b\u044e\u0447\u0430\u0435\u043c\u043e\u0433\u043e \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f (ban)",
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "only_if_banned": {
+                      "description": "\u041f\u0440\u0438 unban \u043d\u0438\u0447\u0435\u0433\u043e \u043d\u0435 \u0434\u0435\u043b\u0430\u0442\u044c, \u0435\u0441\u043b\u0438 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044c \u043d\u0435 \u0437\u0430\u0431\u043b\u043e\u043a\u0438\u0440\u043e\u0432\u0430\u043d",
+                      "default": true,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "permissions_preset": {
+                      "enum": [
+                        "none",
+                        "all",
+                        "custom"
+                      ],
+                      "default": "none",
+                      "description": "none \u2014 \u0437\u0430\u043f\u0440\u0435\u0442\u0438\u0442\u044c \u0432\u0441\u0451 (mute); all \u2014 \u0441\u043d\u044f\u0442\u044c \u043e\u0433\u0440\u0430\u043d\u0438\u0447\u0435\u043d\u0438\u044f; custom \u2014 \u0438\u0441\u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u044c \u0444\u043b\u0430\u0433\u0438 can_* \u043d\u0438\u0436\u0435"
+                    },
+                    "use_independent_chat_permissions": {
+                      "description": "\u0423\u043f\u0440\u0430\u0432\u043b\u044f\u0442\u044c \u043a\u0430\u0436\u0434\u044b\u043c \u0432\u0438\u0434\u043e\u043c \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0439 \u043d\u0435\u0437\u0430\u0432\u0438\u0441\u0438\u043c\u043e",
+                      "default": true,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_send_messages": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_send_audios": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_send_documents": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_send_photos": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_send_videos": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_send_video_notes": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_send_voice_notes": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_send_polls": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_send_other_messages": {
+                      "description": "\u0410\u043d\u0438\u043c\u0430\u0446\u0438\u0438, \u0438\u0433\u0440\u044b, \u0441\u0442\u0438\u043a\u0435\u0440\u044b \u0438 inline-\u0431\u043e\u0442\u044b",
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_add_web_page_previews": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_react_to_messages": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_edit_tag": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_change_info": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_invite_users": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_pin_messages": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_manage_topics": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "is_anonymous": {
+                      "description": "\u0421\u043a\u0440\u044b\u0442\u044c \u0430\u0434\u043c\u0438\u043d\u0438\u0441\u0442\u0440\u0430\u0442\u043e\u0440\u0430 (promote)",
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_manage_chat": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_delete_messages": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_manage_video_chats": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_restrict_members": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_promote_members": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_post_stories": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_edit_stories": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_delete_stories": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_post_messages": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_edit_messages": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_manage_direct_messages": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_manage_tags": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "can_send_welcome_messages": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "custom_title": {
+                      "type": "string",
+                      "description": "\u0422\u0438\u0442\u0443\u043b \u0430\u0434\u043c\u0438\u043d\u0438\u0441\u0442\u0440\u0430\u0442\u043e\u0440\u0430, 0-16 \u0441\u0438\u043c\u0432\u043e\u043b\u043e\u0432 \u0431\u0435\u0437 emoji"
+                    },
+                    "tag": {
+                      "type": "string",
+                      "description": "\u0422\u0435\u0433 \u043e\u0431\u044b\u0447\u043d\u043e\u0433\u043e \u0443\u0447\u0430\u0441\u0442\u043d\u0438\u043a\u0430, 0-16 \u0441\u0438\u043c\u0432\u043e\u043b\u043e\u0432 \u0431\u0435\u0437 emoji; \u043f\u0443\u0441\u0442\u0430\u044f \u0441\u0442\u0440\u043e\u043a\u0430 \u0443\u0434\u0430\u043b\u044f\u0435\u0442 \u0442\u0435\u0433"
+                    },
+                    "chat_join_request_query_id": {
+                      "type": [
+                        "string",
+                        "integer",
+                        "null"
+                      ],
+                      "default": "${join_request.query_id}",
+                      "description": "ID \u0441\u043f\u0435\u0446\u0438\u0430\u043b\u044c\u043d\u043e\u0433\u043e \u0437\u0430\u043f\u0440\u043e\u0441\u0430 \u043d\u0430 \u0432\u0441\u0442\u0443\u043f\u043b\u0435\u043d\u0438\u0435"
+                    },
+                    "result": {
+                      "enum": [
+                        "approve",
+                        "decline",
+                        "queue"
+                      ],
+                      "description": "\u0420\u0435\u0448\u0435\u043d\u0438\u0435 answer_join_request_query"
+                    },
+                    "web_app_url": {
+                      "type": "string",
+                      "description": "HTTPS URL Mini App \u0434\u043b\u044f send_join_request_web_app"
+                    },
+                    "output_field": {
+                      "type": "string",
+                      "default": "telegram_action"
+                    }
+                  }
+                },
+                "config_version": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "ui_x": {
+                  "type": "number"
+                },
+                "ui_y": {
+                  "type": "number"
+                },
+                "group": {
+                  "type": [
+                    "integer",
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "config"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
+                },
+                "kind": {
+                  "const": "telegram_message"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "client_id": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "config": {
+                  "type": "object",
+                  "required": [
+                    "action"
+                  ],
+                  "properties": {
+                    "action": {
+                      "enum": [
+                        "delete",
+                        "delete_many",
+                        "delete_ephemeral",
+                        "pin",
+                        "unpin",
+                        "unpin_all",
+                        "stop_poll",
+                        "delete_reaction",
+                        "delete_all_reactions",
+                        "approve_suggested_post",
+                        "decline_suggested_post"
+                      ],
+                      "description": "\u041e\u043f\u0435\u0440\u0430\u0446\u0438\u044f \u043d\u0430\u0434 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u044f\u043c\u0438. delete_many \u043f\u0440\u0438\u043d\u0438\u043c\u0430\u0435\u0442 1-100 ID; delete_all_reactions \u0443\u0434\u0430\u043b\u044f\u0435\u0442 \u0434\u043e 10000 \u043d\u0435\u0434\u0430\u0432\u043d\u0438\u0445 \u0440\u0435\u0430\u043a\u0446\u0438\u0439 \u043e\u0434\u043d\u043e\u0433\u043e \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f \u0438\u043b\u0438 \u043a\u0430\u043d\u0430\u043b\u0430.",
+                      "default": "delete"
+                    },
+                    "chat_id": {
+                      "type": [
+                        "string",
+                        "integer",
+                        "null"
+                      ],
+                      "default": "${chat.id}"
+                    },
+                    "message_id": {
+                      "type": [
+                        "string",
+                        "integer",
+                        "null"
+                      ],
+                      "default": "${message.message_id}"
+                    },
+                    "message_ids": {
+                      "type": [
+                        "array",
+                        "string"
+                      ],
+                      "description": "1-100 ID: \u043c\u0430\u0441\u0441\u0438\u0432, JSON-\u043c\u0430\u0441\u0441\u0438\u0432, \u0441\u0442\u0440\u043e\u043a\u0430 \u0447\u0435\u0440\u0435\u0437 \u0437\u0430\u043f\u044f\u0442\u0443\u044e \u0438\u043b\u0438 \u043f\u043b\u0435\u0439\u0441\u0445\u043e\u043b\u0434\u0435\u0440 \u0441\u043f\u0438\u0441\u043a\u0430",
+                      "items": {
+                        "type": "integer"
+                      }
+                    },
+                    "receiver_user_id": {
+                      "type": [
+                        "string",
+                        "integer",
+                        "null"
+                      ],
+                      "description": "\u041f\u043e\u043b\u0443\u0447\u0430\u0442\u0435\u043b\u044c ephemeral-\u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u044f"
+                    },
+                    "ephemeral_message_id": {
+                      "type": [
+                        "string",
+                        "integer",
+                        "null"
+                      ],
+                      "description": "ID ephemeral-\u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u044f"
+                    },
+                    "disable_notification": {
+                      "default": false,
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "user_id": {
+                      "type": [
+                        "string",
+                        "integer",
+                        "null"
+                      ],
+                      "description": "\u041f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044c, \u0447\u044c\u0438 \u0440\u0435\u0430\u043a\u0446\u0438\u0438 \u0443\u0434\u0430\u043b\u0438\u0442\u044c"
+                    },
+                    "actor_chat_id": {
+                      "type": [
+                        "string",
+                        "integer",
+                        "null"
+                      ],
+                      "description": "\u041a\u0430\u043d\u0430\u043b/\u0447\u0430\u0442, \u0447\u044c\u0438 \u0440\u0435\u0430\u043a\u0446\u0438\u0438 \u0443\u0434\u0430\u043b\u0438\u0442\u044c; \u043d\u0435\u043b\u044c\u0437\u044f \u043e\u0434\u043d\u043e\u0432\u0440\u0435\u043c\u0435\u043d\u043d\u043e \u0441 user_id"
+                    },
+                    "send_date": {
+                      "type": "string",
+                      "description": "Unix timestamp \u043f\u0443\u0431\u043b\u0438\u043a\u0430\u0446\u0438\u0438 \u043f\u0440\u0435\u0434\u043b\u043e\u0436\u0435\u043d\u043d\u043e\u0433\u043e \u043f\u043e\u0441\u0442\u0430"
+                    },
+                    "comment": {
+                      "type": "string",
+                      "description": "\u041a\u043e\u043c\u043c\u0435\u043d\u0442\u0430\u0440\u0438\u0439 \u043f\u0440\u0438 \u043e\u0442\u043a\u043b\u043e\u043d\u0435\u043d\u0438\u0438 \u043f\u0440\u0435\u0434\u043b\u043e\u0436\u0435\u043d\u043d\u043e\u0433\u043e \u043f\u043e\u0441\u0442\u0430, 0-128 \u0441\u0438\u043c\u0432\u043e\u043b\u043e\u0432"
+                    },
+                    "output_field": {
+                      "type": "string",
+                      "default": "telegram_action"
+                    }
+                  }
+                },
+                "config_version": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "ui_x": {
+                  "type": "number"
+                },
+                "ui_y": {
+                  "type": "number"
+                },
+                "group": {
+                  "type": [
+                    "integer",
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "config"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
+                },
+                "kind": {
+                  "const": "telegram_topic"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "client_id": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "config": {
+                  "type": "object",
+                  "required": [
+                    "action"
+                  ],
+                  "properties": {
+                    "action": {
+                      "enum": [
+                        "get_icon_stickers",
+                        "create",
+                        "edit",
+                        "close",
+                        "reopen",
+                        "delete",
+                        "unpin_all",
+                        "edit_general",
+                        "close_general",
+                        "reopen_general",
+                        "hide_general",
+                        "unhide_general",
+                        "unpin_all_general"
+                      ],
+                      "description": "\u041e\u043f\u0435\u0440\u0430\u0446\u0438\u044f \u0441 \u043e\u0431\u044b\u0447\u043d\u043e\u0439 \u0438\u043b\u0438 General-\u0442\u0435\u043c\u043e\u0439",
+                      "default": "create"
+                    },
+                    "chat_id": {
+                      "type": [
+                        "string",
+                        "integer",
+                        "null"
+                      ],
+                      "default": "${chat.id}"
+                    },
+                    "message_thread_id": {
+                      "type": [
+                        "string",
+                        "integer",
+                        "null"
+                      ],
+                      "default": "${message.message_thread_id}",
+                      "description": "ID \u0442\u0435\u043c\u044b \u0434\u043b\u044f edit/close/reopen/delete/unpin_all"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0442\u0435\u043c\u044b, \u0434\u043e 128 \u0441\u0438\u043c\u0432\u043e\u043b\u043e\u0432"
+                    },
+                    "icon_color": {
+                      "anyOf": [
+                        {
+                          "type": "integer",
+                          "enum": [
+                            7322096,
+                            16766590,
+                            13338331,
+                            9367192,
+                            16749490,
+                            16478047
+                          ]
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "icon_custom_emoji_id": {
+                      "type": [
+                        "string",
+                        "integer",
+                        "null"
+                      ],
+                      "description": "ID custom emoji; \u043f\u0443\u0441\u0442\u0430\u044f \u0441\u0442\u0440\u043e\u043a\u0430 \u0443\u0434\u0430\u043b\u044f\u0435\u0442 \u0438\u043a\u043e\u043d\u043a\u0443 \u043f\u0440\u0438 edit"
+                    },
+                    "output_field": {
+                      "type": "string",
+                      "default": "telegram_action"
+                    }
+                  }
+                },
+                "config_version": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "ui_x": {
+                  "type": "number"
+                },
+                "ui_y": {
+                  "type": "number"
+                },
+                "group": {
+                  "type": [
+                    "integer",
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "config"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
+                },
+                "kind": {
+                  "const": "text_transform"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "client_id": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "config": {
+                  "type": "object",
+                  "required": [
+                    "source",
+                    "operation"
+                  ],
+                  "properties": {
+                    "source": {
+                      "type": "string",
+                      "description": "\u0418\u0441\u0445\u043e\u0434\u043d\u044b\u0439 \u0442\u0435\u043a\u0441\u0442 \u0441 \u043f\u043b\u0435\u0439\u0441\u0445\u043e\u043b\u0434\u0435\u0440\u0430\u043c\u0438",
+                      "default": "${message.text}"
+                    },
+                    "operation": {
+                      "enum": [
+                        "trim",
+                        "upper",
+                        "lower",
+                        "capitalize",
+                        "title",
+                        "replace"
+                      ],
+                      "default": "trim"
+                    },
+                    "search": {
+                      "type": "string",
+                      "default": ""
+                    },
+                    "replacement": {
+                      "type": "string",
+                      "default": ""
+                    },
+                    "output_field": {
+                      "type": "string",
+                      "default": "text_result"
+                    }
+                  }
+                },
+                "config_version": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "ui_x": {
+                  "type": "number"
+                },
+                "ui_y": {
+                  "type": "number"
+                },
+                "group": {
+                  "type": [
+                    "integer",
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "config"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "connections": {
+        "type": "array",
+        "maxItems": 2000,
+        "items": {
+          "type": "object",
+          "properties": {
+            "source": {
+              "type": [
+                "integer",
+                "string"
+              ]
+            },
+            "target": {
+              "type": [
+                "integer",
+                "string"
+              ]
+            },
+            "id": {
+              "type": "integer"
+            },
+            "client_id": {
+              "type": "string",
+              "maxLength": 128
+            },
+            "order": {
+              "type": "integer"
+            },
+            "output": {
+              "type": "string",
+              "description": "Source port, e.g. message, true or false."
+            },
+            "target_port": {
+              "type": "string",
+              "description": "Input port for a composite target."
+            }
+          },
+          "required": [
+            "source",
+            "target"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": [
+      "blocks",
+      "connections"
+    ],
+    "additionalProperties": false
+  },
+  "commands": {
+    "type": "array",
+    "maxItems": 100,
+    "items": {
+      "type": "object",
+      "properties": {
+        "command": {
+          "type": "string",
+          "pattern": "^[a-z0-9_]{1,32}$"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "is_ephemeral": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "command",
+        "description"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "localizations": {
+    "type": "array",
+    "maxItems": 20,
+    "items": {
+      "type": "object",
+      "properties": {
+        "language_code": {
+          "type": "string",
+          "pattern": "^[a-z]{2}$"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "short_description": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 512
+        },
+        "commands": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "properties": {
+              "command": {
+                "type": "string",
+                "pattern": "^[a-z0-9_]{1,32}$"
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "is_ephemeral": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "command",
+              "description"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "language_code"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "menu_button": {
+    "type": "object",
+    "properties": {
+      "type": {
+        "type": "string",
+        "enum": [
+          "default",
+          "commands",
+          "web_app"
+        ]
+      },
+      "text": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 64
+      },
+      "url": {
+        "type": "string",
+        "pattern": "^https://",
+        "description": "Required with text for web_app."
+      }
+    },
+    "required": [
+      "type"
+    ],
+    "additionalProperties": false,
+    "allOf": [
+      {
+        "if": {
+          "properties": {
+            "type": {
+              "const": "web_app"
+            }
+          }
+        },
+        "then": {
+          "required": [
+            "text",
+            "url"
+          ]
+        }
+      }
+    ]
+  },
+  "admin_rights": {
+    "type": "object",
+    "properties": {
+      "groups": {
+        "type": "array",
+        "uniqueItems": true,
+        "items": {
+          "type": "string",
+          "enum": [
+            "is_anonymous",
+            "can_manage_chat",
+            "can_delete_messages",
+            "can_manage_video_chats",
+            "can_restrict_members",
+            "can_promote_members",
+            "can_change_info",
+            "can_invite_users",
+            "can_post_stories",
+            "can_edit_stories",
+            "can_delete_stories",
+            "can_pin_messages",
+            "can_manage_topics",
+            "can_manage_tags",
+            "can_send_welcome_messages"
+          ]
+        }
+      },
+      "channels": {
+        "type": "array",
+        "uniqueItems": true,
+        "items": {
+          "type": "string",
+          "enum": [
+            "is_anonymous",
+            "can_manage_chat",
+            "can_delete_messages",
+            "can_manage_video_chats",
+            "can_restrict_members",
+            "can_promote_members",
+            "can_change_info",
+            "can_invite_users",
+            "can_post_stories",
+            "can_edit_stories",
+            "can_delete_stories",
+            "can_post_messages",
+            "can_edit_messages",
+            "can_manage_direct_messages",
+            "can_send_welcome_messages"
+          ]
+        }
+      }
+    },
+    "additionalProperties": false
+  }
+}

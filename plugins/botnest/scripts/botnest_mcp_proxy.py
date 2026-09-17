@@ -350,6 +350,17 @@ REMOTE_TOOLS = [
 ]
 
 
+_ARGUMENT_SCHEMAS = json.loads(
+    (Path(__file__).resolve().parents[1] / "assets" / "tool-input-schemas.json").read_text()
+)
+for _tool in REMOTE_TOOLS:
+    if _tool["name"] in {"prepare_telegram_bot", "update_telegram_bot"}:
+        _tool["inputSchema"]["properties"]["flow"] = _ARGUMENT_SCHEMAS["flow"]
+    if _tool["name"] == "update_telegram_bot_profile":
+        for _field in ("commands", "localizations", "menu_button", "admin_rights"):
+            _tool["inputSchema"]["properties"][_field] = _ARGUMENT_SCHEMAS[_field]
+
+
 class HttpFailure(RuntimeError):
     def __init__(self, status: int, payload: object) -> None:
         super().__init__(f"HTTP {status}")
