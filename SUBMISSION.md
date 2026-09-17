@@ -4,6 +4,13 @@ This is the reviewer-ready source of truth for the public botnest ChatGPT
 submission. Submit it as **With MCP** because ChatGPT connects directly to the
 production remote MCP with OAuth and uses the uploaded shared skill.
 
+Schema compatibility: the root JSON retains the `/apps-sdk/` identifier explicitly
+required by the September 1 portal. As of September 17, OpenAI redirects that URL
+to the current `/plugins/` schema, whose `$schema` constant differs. The package
+builder also emits `dist/current-schema/chatgpt-app-submission.json` for the new
+importer. Use the identifier requested by the actual portal; both variants contain
+identical application data, cases and justifications.
+
 ## Listing
 
 | Field | Value |
