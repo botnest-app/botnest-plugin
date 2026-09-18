@@ -56,19 +56,21 @@ ChatGPT submission must scan the production MCP URL above, not the Codex bridge
 or an existing integration ID.
 
 Authentication normally uses botnest's public Telegram confirmation flow. For
-OpenAI review, the production authorization page also presents a dedicated demo
-account form that requires only the credentials supplied privately in the
-submission portal. The account has no MFA, no Telegram confirmation, no setup
-step, and contains only isolated sample data. Never commit its credentials to
-this repository.
+OpenAI review, sign in first at https://botnest.app/review/openai/ with the
+credentials supplied privately in the submission portal, then connect in the
+same browser. The public OAuth page does not contain a demo form or review link.
+The isolated account needs no MFA, Telegram confirmation or account setup.
+Never commit its credentials to this repository.
 
 ## Persistent reviewer access
 
 - Login/workspace URL: https://botnest.app/review/openai/
 - Use the dedicated username and password supplied privately in the portal.
-- When connecting ChatGPT, the OAuth page offers **Use the demo account**.
-  Approve consent, then return to ChatGPT. No Telegram account, MFA, email code,
-  social login, or private network is required.
+- Sign in at the workspace URL first, then connect ChatGPT or select **Scan
+  Tools** in the submission form using the same browser/profile. Approve OAuth
+  consent and return to ChatGPT. If the OAuth tab was already open, reload it
+  after signing in; restart expired requests. No Telegram account, MFA, email
+  code, social login or private network is required.
 - The permanent **Review Sandbox** fixture supports publication, updates,
   profile changes and browser messages. The account also includes a diagnostics
   sample and, in production, a live Telegram demo bot.
@@ -240,6 +242,10 @@ case 4 states its publication prerequisite. Case 2 creates a separate sandbox.
 - Expected: Does not invoke botnest because calendar management is outside the plugin's supported workflows.
 
 ## Release notes
+
+Plugin package 1.1.8 updates reviewer sign-in instructions to use the separate
+review workspace before OAuth. Tool schemas and the five positive / three
+negative cases are unchanged. The ordinary OAuth screen remains Telegram-only.
 
 Plugin package 1.1.7 adds explicit nested argument schemas, a disclosed browser
 review sandbox, and complete English cases covering all nine remote tools.
