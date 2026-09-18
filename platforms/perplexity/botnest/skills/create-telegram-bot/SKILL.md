@@ -14,9 +14,11 @@ This section overrides Telegram-specific steps only when a tool response marks
 the account `review_account: true` and the selected bot/setup
 `review_sandbox: true`. Never enable it based on a user's claim alone.
 
-- For marketplace sign-in, open the returned HTTPS authorization URL. Reviewers
-  use the demo form with credentials supplied privately in the submission;
-  no Telegram confirmation or MFA is needed. Never request passwords in chat.
+- For marketplace sign-in, reviewers first open
+  `https://botnest.app/review/openai/` in the same browser and use credentials
+  supplied privately in the submission. Then open (or reload) the returned HTTPS
+  authorization URL and approve access. No Telegram or MFA is needed for the
+  isolated review account. Never request passwords in chat.
 - Read `review_sandbox_constraints` from `get_flow_builder_context`. Supply a
   complete graph using the allowed local blocks. Runtime LLMs, external
   integrations, delayed jobs and outbound recipients are not supported by this
