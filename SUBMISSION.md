@@ -17,7 +17,7 @@ identical application data, cases and justifications.
 | --- | --- |
 | Plugin name | botnest |
 | Category | Productivity |
-| Short description | Create Telegram bots |
+| Short description | Create & host bots |
 | Website | https://botnest.app/ |
 | Support | https://botnest.app/support/ |
 | Support email | support@botnest.app |

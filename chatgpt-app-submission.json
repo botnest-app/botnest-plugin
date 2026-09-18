@@ -3,7 +3,7 @@
   "schema_version": 1,
   "app_info": {
     "display_name": "botnest",
-    "subtitle": "Create Telegram bots",
+    "subtitle": "Create & host bots",
     "description": "botnest helps you create, configure, troubleshoot, customize, and publish Telegram bots through ChatGPT.",
     "category": "PRODUCTIVITY"
   },
